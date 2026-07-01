@@ -1,0 +1,2096 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Learn Python — Class 10</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet"/>
+<!-- Pyodide for real Python execution in browser -->
+<script src="https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#06091a;--card:#0b1222;--border:#1a2d4a;--surface:#0f1c30;
+  --text:#e2e8f0;--muted:#64748b;--radius:16px;
+  --sky:#22d3ee;--yel:#fbbf24;--grn:#4ade80;--pnk:#f472b6;--pur:#a78bfa;--org:#fb923c;--red:#f87171;--teal:#2dd4bf;
+}
+html{scroll-behavior:smooth;}
+body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;min-height:100vh;}
+
+/* STARS */
+#stars{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+.s{position:absolute;border-radius:50%;background:#fff;}
+@keyframes tw{0%{opacity:.05}100%{opacity:.6}}
+
+/* HERO */
+header{position:relative;z-index:1;background:linear-gradient(160deg,#0a1628 0%,#06091a 100%);padding:clamp(40px,8vw,80px) 20px clamp(30px,5vw,60px);text-align:center;border-bottom:1px solid var(--border);overflow:hidden;}
+.hero-snake{font-size:clamp(60px,12vw,100px);display:block;animation:snakeFloat 3s ease-in-out infinite;}
+@keyframes snakeFloat{0%,100%{transform:translateY(0) rotate(-2deg);}50%{transform:translateY(-16px) rotate(2deg);}}
+header h1{font-size:clamp(1.8rem,5vw,3.5rem);font-weight:700;background:linear-gradient(90deg,#22d3ee,#a78bfa 50%,#f472b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-top:12px;line-height:1.15;}
+header p{color:#94a3b8;font-size:clamp(.9rem,2vw,1.05rem);margin-top:10px;max-width:540px;margin-inline:auto;line-height:1.6;}
+.hero-badges{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:18px;}
+.hb{padding:5px 14px;border-radius:99px;font-size:.78rem;font-weight:600;border:1px solid;letter-spacing:.3px;}
+.hb-b{border-color:#22d3ee;color:#22d3ee;background:#22d3ee12;}
+.hb-g{border-color:#4ade80;color:#4ade80;background:#4ade8012;}
+.hb-p{border-color:#a78bfa;color:#a78bfa;background:#a78bfa12;}
+.hb-o{border-color:#fb923c;color:#fb923c;background:#fb923c12;}
+
+/* PROGRESS BAR */
+#progress-bar{position:fixed;top:0;left:0;width:0%;height:3px;background:linear-gradient(90deg,#22d3ee,#a78bfa);z-index:1000;transition:width .2s;}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:99;background:#06091acc;backdrop-filter:blur(14px);border-bottom:1px solid var(--border);padding:0 16px;overflow-x:auto;white-space:nowrap;scrollbar-width:none;}
+nav::-webkit-scrollbar{display:none;}
+.nav-inner{display:inline-flex;gap:0;min-width:max-content;}
+nav a{display:inline-block;color:var(--muted);text-decoration:none;font-size:.82rem;font-weight:600;padding:13px 14px;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap;}
+nav a:hover,nav a.active{color:#22d3ee;border-bottom-color:#22d3ee;}
+
+/* MAIN */
+main{max-width:960px;margin:0 auto;padding:clamp(20px,4vw,48px) clamp(12px,4vw,24px) 80px;position:relative;z-index:1;}
+
+/* LESSON CARD */
+.lesson{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:clamp(20px,4vw,36px);overflow:hidden;opacity:0;transform:translateY(30px);transition:opacity .6s ease,transform .6s ease;}
+.lesson.show{opacity:1;transform:translateY(0);}
+.lesson-head{padding:clamp(16px,3vw,28px);border-bottom:1px solid var(--border);display:flex;gap:14px;align-items:flex-start;position:relative;overflow:hidden;}
+.lesson-head::after{content:'';position:absolute;right:-40px;top:-40px;width:180px;height:180px;border-radius:50%;opacity:.05;background:var(--ac);filter:blur(30px);}
+.lnum{font-size:.7rem;font-weight:700;letter-spacing:2px;color:var(--ac);opacity:.7;font-family:'Fira Code',monospace;}
+.licon{font-size:clamp(1.8rem,4vw,2.4rem);line-height:1;flex-shrink:0;}
+.ltitle{font-size:clamp(1.05rem,2.5vw,1.35rem);font-weight:700;color:var(--ac);}
+.lsub{color:var(--muted);font-size:.88rem;margin-top:3px;line-height:1.5;}
+
+/* TWO-COL LAYOUT */
+.lesson-cols{display:grid;grid-template-columns:1fr 1fr;gap:0;}
+@media(max-width:620px){.lesson-cols{grid-template-columns:1fr;}}
+
+/* ANIMATION PANEL */
+.anim-panel{padding:clamp(16px,3vw,28px);background:#070d1c;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:200px;border-right:1px solid var(--border);gap:12px;}
+@media(max-width:620px){.anim-panel{border-right:none;border-bottom:1px solid var(--border);min-height:160px;}}
+.anim-panel svg{width:min(170px,85%);height:auto;}
+
+/* THEORY */
+.theory{padding:clamp(14px,3vw,24px);}
+.theory-item{padding:10px 0;border-bottom:1px solid #0f1c30;display:flex;gap:10px;align-items:flex-start;}
+.theory-item:last-child{border:none;}
+.tdot{width:6px;height:6px;border-radius:50%;background:var(--ac);flex-shrink:0;margin-top:7px;}
+.tkey{font-size:.8rem;font-weight:700;color:var(--ac);margin-bottom:3px;}
+.tval{font-size:.83rem;color:#94a3b8;line-height:1.6;}
+.tval b{color:#cbd5e1;}
+.tval code{background:#0f1c30;padding:1px 5px;border-radius:4px;font-family:'Fira Code',monospace;font-size:.82rem;color:#fbbf24;}
+.tval i{color:#e2e8f0;}
+
+/* CODE SECTION */
+.code-sec{padding:clamp(12px,3vw,24px);border-top:1px solid var(--border);}
+.sec-label{font-size:.7rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.code-wrap{position:relative;}
+pre.code-block{background:#020810;border:1px solid var(--border);border-radius:10px;padding:clamp(12px,2vw,18px);font-family:'Fira Code',monospace;font-size:clamp(.78rem,1.5vw,.88rem);line-height:1.85;overflow-x:auto;color:#cdd6f4;tab-size:4;}
+.copy-btn{position:absolute;top:8px;right:8px;background:#1a2d4a;color:#64748b;border:none;border-radius:6px;padding:4px 11px;font-size:.72rem;cursor:pointer;font-family:'Space Grotesk',sans-serif;font-weight:600;transition:all .2s;}
+.copy-btn:hover{background:#22d3ee;color:#020810;}
+.out-block{background:#020c04;border:1px dashed #1a3a1a;border-radius:8px;padding:12px 16px;font-family:'Fira Code',monospace;font-size:.82rem;color:#4ade80;line-height:1.8;white-space:pre;overflow-x:auto;margin-top:10px;}
+
+/* Syntax colours */
+.kw{color:#c084fc;font-weight:600;}
+.fn{color:#38bdf8;}
+.st{color:#86efac;}
+.cm{color:#374151;}
+.nm{color:#fbbf24;}
+
+/* CODE RUNNER */
+.runner{background:#040c18;border:2px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-top:0;}
+.runner-tabs{display:flex;border-bottom:1px solid var(--border);}
+.rtab{flex:1;padding:10px;text-align:center;font-size:.78rem;font-weight:700;cursor:pointer;color:var(--muted);background:transparent;border:none;transition:all .2s;font-family:'Space Grotesk',sans-serif;letter-spacing:.5px;}
+.rtab.on{color:#22d3ee;background:#06091a;border-bottom:2px solid #22d3ee;}
+.runner-editor{position:relative;}
+.runner-editor textarea{width:100%;min-height:clamp(120px,22vw,200px);background:#020810;border:none;color:#e2e8f0;font-family:'Fira Code',monospace;font-size:clamp(.78rem,1.5vw,.88rem);line-height:1.85;padding:clamp(12px,2vw,18px);resize:vertical;outline:none;tab-size:4;}
+.runner-footer{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#040c18;border-top:1px solid var(--border);flex-wrap:wrap;}
+.run-btn{background:linear-gradient(90deg,#22d3ee,#818cf8);color:#020810;border:none;border-radius:8px;padding:9px 22px;font-size:.88rem;font-weight:700;cursor:pointer;font-family:'Space Grotesk',sans-serif;transition:opacity .2s;display:flex;align-items:center;gap:7px;white-space:nowrap;}
+.run-btn:hover{opacity:.85;}
+.run-btn:disabled{opacity:.5;cursor:not-allowed;}
+.clear-btn{background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:8px;padding:9px 16px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:'Space Grotesk',sans-serif;transition:all .2s;}
+.clear-btn:hover{color:#f87171;border-color:#f87171;}
+.py-status{font-size:.75rem;color:var(--muted);margin-left:auto;}
+.output-area{border-top:1px solid var(--border);min-height:70px;max-height:280px;overflow-y:auto;padding:clamp(10px,2vw,16px);}
+.out-text{font-family:'Fira Code',monospace;font-size:clamp(.76rem,1.4vw,.85rem);line-height:1.8;white-space:pre-wrap;word-break:break-all;}
+.out-text.success{color:#4ade80;}
+.out-text.error{color:#f87171;}
+.out-text.loading{color:#fbbf24;animation:pulse 1s ease-in-out infinite;}
+.out-text.info{color:#64748b;font-style:italic;}
+
+/* TASK */
+.task-box{background:linear-gradient(135deg,#0a1628,#040c18);border:1px solid var(--ac);border-radius:10px;padding:14px 16px;margin-top:12px;display:flex;gap:10px;align-items:flex-start;}
+.task-icon{font-size:1.2rem;flex-shrink:0;}
+.task-text{font-size:.85rem;line-height:1.6;color:#cbd5e1;}
+.task-text b{color:var(--ac);}
+
+/* QUIZ */
+.quiz-wrap{background:var(--card);border:1px solid #4f46e5;border-radius:var(--radius);padding:clamp(20px,4vw,36px);position:relative;overflow:hidden;}
+.quiz-wrap::before{content:'🧠';position:absolute;right:-10px;top:-10px;font-size:100px;opacity:.04;}
+.quiz-title{font-size:clamp(1.2rem,3vw,1.6rem);font-weight:700;color:#a78bfa;margin-bottom:4px;}
+.quiz-sub{color:var(--muted);font-size:.85rem;margin-bottom:24px;}
+.q-box{display:none;}
+.q-box.on{display:block;animation:qfade .35s ease;}
+@keyframes qfade{from{opacity:0;transform:translateX(14px);}to{opacity:1;transform:translateX(0);}}
+.q-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.q-counter{font-size:.72rem;font-weight:700;letter-spacing:2px;color:#6366f1;text-transform:uppercase;}
+.q-pts{font-size:.72rem;color:var(--muted);}
+.q-prog{width:100%;height:3px;background:#1a2d4a;border-radius:2px;margin-bottom:16px;overflow:hidden;}
+.q-prog-bar{height:100%;background:linear-gradient(90deg,#6366f1,#a78bfa);transition:width .4s ease;}
+.q-text{font-size:clamp(.95rem,2vw,1.05rem);font-weight:600;color:#e2e8f0;line-height:1.55;margin-bottom:18px;}
+.q-opts{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+@media(max-width:460px){.q-opts{grid-template-columns:1fr;}}
+.opt{background:#0b1222;border:1px solid var(--border);border-radius:10px;padding:12px 14px;font-size:.88rem;color:#cbd5e1;font-weight:500;cursor:pointer;font-family:'Space Grotesk',sans-serif;text-align:left;transition:all .2s;line-height:1.4;}
+.opt:hover:not(:disabled){border-color:#6366f1;color:#a78bfa;background:#0f1840;}
+.opt.correct{background:#052e16;border-color:#4ade80;color:#4ade80;font-weight:700;}
+.opt.wrong{background:#2d0a0a;border-color:#f87171;color:#f87171;}
+.q-exp{margin-top:12px;padding:10px 14px;border-radius:8px;font-size:.83rem;line-height:1.6;min-height:28px;}
+.q-exp.show{background:#0a1628;border:1px solid #1a2d4a;color:#94a3b8;}
+.q-footer{display:flex;align-items:center;justify-content:space-between;margin-top:16px;flex-wrap:wrap;gap:10px;}
+.q-score-text{font-size:.85rem;color:var(--muted);}
+.q-score-text b{color:#4ade80;}
+.next-btn{background:#6366f1;color:#fff;border:none;border-radius:9px;padding:10px 22px;font-size:.88rem;font-weight:700;cursor:pointer;font-family:'Space Grotesk',sans-serif;transition:background .2s;}
+.next-btn:hover{background:#4f46e5;}
+.result-box{text-align:center;padding:20px 10px;display:none;}
+.res-emoji{font-size:3.5rem;margin-bottom:12px;}
+.res-title{font-size:1.4rem;font-weight:700;color:#a78bfa;margin-bottom:8px;}
+.res-score{font-size:2.8rem;font-weight:700;color:#4ade80;margin:10px 0;}
+.res-msg{color:#94a3b8;font-size:.9rem;margin-bottom:20px;}
+
+/* FOOTER */
+footer{text-align:center;padding:28px 16px;color:#334155;font-size:.8rem;border-top:1px solid var(--border);position:relative;z-index:1;line-height:1.8;}
+
+/* GLOBAL ANIMS */
+@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-14px);}}
+@keyframes boxBounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0;}}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.5;}}
+@keyframes spin{to{transform:rotate(360deg);}}
+@keyframes calcBlink{0%,100%{opacity:1;}49%{opacity:1;}50%{opacity:0;}99%{opacity:0;}}
+@keyframes typeIn{from{opacity:0;}to{opacity:1;}}
+</style>
+</head>
+<body>
+<div id="progress-bar"></div>
+<div id="stars"></div>
+
+<header>
+  <span class="hero-snake">🐍</span>
+  <h1>Learn Python — Class 10</h1>
+  <p>Master the world's most popular programming language step by step, with real code examples and a live code runner!</p>
+  <div class="hero-badges">
+    <span class="hb hb-b">🎓 Class 10 Level</span>
+    <span class="hb hb-g">✅ Beginner Friendly</span>
+    <span class="hb hb-p">⚡ Live Code Runner</span>
+    <span class="hb hb-o">📱 Mobile Friendly</span>
+  </div>
+</header>
+
+<nav id="sitenav">
+  <div class="nav-inner">
+    <a href="#intro" data-id="intro">🐍 What is Python?</a><a href="#variables" data-id="variables">📦 Variables &amp; Data Types</a><a href="#operators" data-id="operators">🧮 Operators &amp; Expressions</a><a href="#io" data-id="io">⌨️ Input &amp; Output</a><a href="#conditions" data-id="conditions">🔀 If / Elif / Else</a><a href="#loops" data-id="loops">🔄 Loops (for &amp; while)</a><a href="#strings" data-id="strings">📝 Strings</a><a href="#lists" data-id="lists">📋 Lists</a><a href="#functions" data-id="functions">⚙️ Functions</a>
+    <a href="#quiz" data-id="quiz">🧠 Quiz</a>
+  </div>
+</nav>
+
+<main>
+
+
+<section class="lesson" id="intro" style="--ac:#22d3ee">
+  <div class="lesson-head">
+    <span class="licon">🐍</span>
+    <div>
+      <div class="lnum">LESSON 01</div>
+      <div class="ltitle">What is Python?</div>
+      <div class="lsub">The world&#39;s most beginner-friendly language</div>
+    </div>
+  </div>
+  <div class="lesson-cols">
+    <div class="anim-panel">
+      <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs><radialGradient id="sg" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#4ade80"/><stop offset="100%" stop-color="#15803d"/></radialGradient></defs>
+  <g style="animation:float 3s ease-in-out infinite">
+    <path d="M40 140 Q65 165 90 140 Q115 115 140 140 Q165 165 175 140" stroke="#22d3ee" stroke-width="18" fill="none" stroke-linecap="round" style="animation:dash 3s linear infinite" stroke-dasharray="200" stroke-dashoffset="0"/>
+    <circle cx="175" cy="138" r="14" fill="url(#sg)"/>
+    <circle cx="170" cy="133" r="3" fill="#0a0f2e"/><circle cx="180" cy="133" r="3" fill="#0a0f2e"/>
+    <path d="M173 145 Q175 152 177 145" stroke="#f87171" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <circle cx="55" cy="60" r="5" fill="#fbbf24" style="animation:blink 2s ease infinite"/><circle cx="145" cy="55" r="4" fill="#f472b6" style="animation:blink 2.5s ease infinite 0.5s"/><circle cx="100" cy="40" r="3" fill="#a78bfa" style="animation:blink 1.8s ease infinite 1s"/>
+    <text x="100" y="190" text-anchor="middle" fill="#22d3ee" font-size="13" font-family="Space Grotesk,sans-serif" font-weight="700">Python 🐍</text>
+  </g>
+</svg>
+    </div>
+    <div class="theory">
+      
+      <div class="theory-item">
+        <span class="tdot"></span>
+        <div>
+          <div class="tkey">Created in 1991</div>
+          <div class="tval">Python was created by <b>Guido van Rossum</b>. It's named after the comedy show <i>Monty Python's Flying Circus</i> — not the snake!</div>
+        </div>
+      </div>
+      
+      <div class="theory-item">
+        <span class="tdot"></span>
+        <div>
+          <div class="tkey">Why Python?</div>
+          <div class="tval">Python reads almost like English. You don't need to write complex code just to say Hello to the world. That's why beginners love it.</div>
+        </div>
+      </div>
+      
+      <div class="theory-item">
+        <span class="tdot"></span>
+        <div>
+          <div class="tkey">Where is Python used?</div>
+          <div class="tval">Google, NASA, Instagram, Netflix, YouTube — all use Python. It powers <b>Artificial Intelligence</b>, websites, games, data science, and automation.</div>
+        </div>
+      </div>
+      
+      <div class="theory-item">
+        <span class="tdot"></span>
+        <div>
+          <div class="tkey">Running Python</div>
+          <div class="tval">You write code in a <code>.py</code> file and run it with <code>python3 filename.py</code>. Or use an online editor like the one below!</div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+  
+  <div class="code-sec">
+    <div class="sec-label">📖 Example Code</div>
+    <div class="code-wrap">
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      <pre class="code-block"><span class="cm"># Your very first Python program!</span>
+<span class="fn">print</span>(<span class="st">&quot;Hello, World!&quot;</span>)
+<span class="fn">print</span>(<span class="st">&quot;I am learning Python 🐍&quot;</span>)
+<span class="fn">print</span>(<span class="st">&quot;Python is awesome!&quot;</span>)</pre>
+    </div>
+    
+    <div class="sec-label" style="margin-top:12px;">📤 Expected Output</div>
+    <div class="out-block">Hello, World!
+I am learning Python 🐍
+Python is awesome!</div>
+    
+  </div>
+  <!-- LIVE CODE RUNNER -->
+  <div class="code-sec" style="padding-top:0;">
+    <div class="sec-label">🚀 Try It Yourself — Live Code Runner</div>
+    <div class="runner">
+      <div class="runner-tabs">
+        <button class="rtab on" onclick="switchTab(this,'edit','intro')">✏️ Editor</button>
+        <button class="rtab" onclick="switchTab(this,'out','intro')">📤 Output</button>
+      </div>
+      <div id="edit-intro" class="runner-editor">
+        <textarea id="code-intro" spellcheck="false" autocorrect="off" autocapitalize="off"># Your very first Python program!
+print(&#34;Hello, World!&#34;)
+print(&#34;I am learning Python 🐍&#34;)
+print(&#34;Python is awesome!&#34;)</textarea>
+      </div>
+      <div id="out-intro" style="display:none">
+        <div class="output-area"><div class="out-text info" id="result-intro">Run your code to see output here ▶</div></div>
+      </div>
+      <div class="runner-footer">
+        <button class="run-btn" onclick="runCode('intro')">▶ Run Code</button>
+        <button class="clear-btn" onclick="clearCode('intro','# Your very first Python program!
+print(&#34;Hello, World!&#34;)
+print(&#34;I am learning Python 🐍&#34;)
+print(&#34;Python is awesome!&#34;)')">↺ Reset</button>
+        <span class="py-status" id="status-intro">Python ready</span>
+      </div>
+    </div>
+    
+    <div class="task-box" style="border-color:#22d3ee">
+      <span class="task-icon">✏️</span>
+      <div class="task-text"><b>Your Task:</b> Print three different lines: your name, your class, and your school name.</div>
+    </div>
+    
+  </div>
+  
+</section>
+
+<section class="lesson" id="variables" style="--ac:#fbbf24">
+  <div class="lesson-head">
+    <span class="licon">📦</span>
+    <div>
+      <div class="lnum">LESSON 02</div>
+      <div class="ltitle">Variables &amp; Data Types</div>
+      <div class="lsub">Storing information in your program</div>
+    </div>
+  </div>
+  <div class="lesson-cols">
+    <div class="anim-panel">
+      <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <g style="animation:boxBounce 2s ease-in-out infinite">
+    <rect x="35" y="70" width="130" height="100" rx="12" fill="#0d1627" stroke="#fbbf24" stroke-width="2.5"/>
+    <rect x="25" y="55" width="150" height="24" rx="8" fill="#fbbf24"/>
+    <text x="100" y="71" text-anchor="middle" fill="#030812" font-size="12" font-weight="700" font-family="Space Grotesk,sans-serif">📦 Variables</text>
+    <text x="100" y="104" text-anchor="middle" fill="#818cf8" font-size="12" font-family="Fira Code,monospace">name = "Alex"</text>
+    <text x="100" y="124" text-anchor="middle" fill="#fbbf24" font-size="12" font-family="Fira Code,monospace">age = 15</text>
+    <text x="100" y="144" text-anchor="middle" fill="#4ade80" font-size="12" font-family="Fira Code,monospace">marks = 92.5</text>
+    <text x="100" y="164" text-anchor="middle" fill="#f472b6" font-size="12" font-family="Fira Code,monospace">passed = True</text>
+  </g>
+</svg>
+    </div>
+    <div class="theory">
+      
+      <div class="theory-item">
+        <span class="tdot"></span>
+        <div>
+          <div class="tkey">What is a Variable?</div>
+          <div class="tval">A variable is like a <b>labelled box</b> that stores data. You give it a name, and put something inside it using <code>=</code>.</div>
+        </div>
+      </div>
+      
+      <div class="theory-item">
+        <span class="tdot"></span>
+        <div>
+          <div class="tkey">int — Integers</div>
+          <div class="tval"><code>age = 15</code> — Whole numbers (no decimal). Used for counting, scores, years.</div>
+        </div>
+      </div>
+      
+      <div class="theory-item">
+        <span class="tdot"></span>
+        <div>
+          <div class="tkey">float — Decimal Numbers</div>
+          <div class="tval"><code>height = 5.7</code> — Numbers with a decimal point. Used for measurements, percentages.</div>
+        </div>
+      </div>
+      
+      <div class="theory-item">
+        <span class="tdot"></span>
+        <div>
+          <div class="tkey">str — Strings (Text)</div>
+          <div class="tval"><code>name = "Priya"</code> — Any text inside quotes. Used for names, messages, addresses.</div>
+        </div>
+      </div>
+      
+      <div class="theory-item">
+        <span class="tdot"></span>
+        <div>
+          <div class="tkey">bool — True or False</div>
+          <div class="tval"><code>passed = True</code> — Only two values: <b>True</b> or <b>False</b>. Used for yes/no decisions.</div>
+        </div>
+      </div>
+      
+      <div class="theory-item">
+        <span class="tdot"></span>
+        <div>
+          <div class="tkey">Check the type</div>
+          <div class="tval">Use <code>type(variable)</code> to find what kind of data is stored inside it.</div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+  
+  <div class="code-sec">
+    <div class="sec-label">📖 Example Code</div>
+    <div class="code-wrap">
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      <pre class="code-block"><span class="cm"># Variables <span class="kw">and </span>Data Types</span>
+name = <span class="st">&quot;Alex&quot;</span>
+age = <span class="nm">15</span>
+marks = <span class="nm">92.5</span>
+<span class="kw">pass</span>ed = <span class="kw">True</span>
+
+<span class="fn">print</span>(<span class="st">&quot;Name:&quot;</span>, name)
+<span class="fn">print</span>(<span class="st">&quot;Age:&quot;</span>, age)
+<span class="fn">print</span>(<span class="st">&quot;Marks:&quot;</span>, marks)
+<span class="fn">print</span>(<span class="st">&quot;Passed:&quot;</span>, <span class="kw">pass</span>ed)
+<span class="fn">print</span>(<span class="st">&quot;Type of age:&quot;</span>, <span class="fn">type</span>(age))
+<span class="fn">print</span>(<span class="st">&quot;Type of marks:&quot;</span>, <span class="fn">type</span>(marks))</pre>
+    </div>
+    
+    <div class="sec-label" style="margin-top:12px;">📤 Expected Output</div>
+    <div class="out-block">Name: Alex
+Age: 15
+Marks: 92.5
+Passed: True
+Type of age: &lt;class &#39;int&#39;&gt;
+Type of marks: &lt;class &#39;float&#39;&gt;</div>
+    
+  </div>
+  <!-- LIVE CODE RUNNER -->
+  <div class="code-sec" style="padding-top:0;">
+    <div class="sec-label">🚀 Try It Yourself — Live Code Runner</div>
+    <div class="runner">
+      <div class="runner-tabs">
+        <button class="rtab on" onclick="switchTab(this,'edit','variables')">✏️ Editor</button>
+        <button class="rtab" onclick="switchTab(this,'out','variables')">📤 Output</button>
+      </div>
+      <div id="edit-variables" class="runner-editor">
+        <textarea id="code-variables" spellcheck="false" autocorrect="off" autocapitalize="off"># Variables and Data Types
+name = &#34;Alex&#34;
+age = 15
+marks = 92.5
+passed = True
+
+print(&#34;Name:&#34;, name)
+print(&#34;Age:&#34;, age)
+print(&#34;Marks:&#34;, marks)
+print(&#34;Passed:&#34;, passed)
+print(&#34;Type of age:&#34;, type(age))
+print(&#34;Type of marks:&#34;, type(marks))</textarea>
+      </div>
+      <div id="out-variables" style="display:none">
+        <div class="output-area"><div class="out-text info" id="result-variables">Run your code to see output here ▶</div></div>
+      </div>
+      <div class="runner-footer">
+        <button class="run-btn" onclick="runCode('variables')">▶ Run Code</button>
+        <button class="clear-btn" onclick="clearCode('variables','# Variables and Data Types
+name = &#34;Alex&#34;
+age = 15
+marks = 92.5
+passed = True
+
+print(&#34;Name:&#34;, name)
+print(&#34;Age:&#34;, age)
+print(&#34;Marks:&#34;, marks)
+print(&#34;Passed:&#34;, passed)
+print(&#34;Type of age:&#34;, type(age))
+print(&#34;Type of marks:&#34;, type(marks))')">↺ Reset</button>
+        <span class="py-status" id="status-variables">Python ready</span>
+      </div>
+    </div>
+    
+    <div class="task-box" style="border-color:#fbbf24">
+      <span class="task-icon">✏️</span>
+      <div class="task-text"><b>Your Task:</b> Create variables for your own name, age, favourite subject, and marks. Then print them all.</div>
+    </div>
+    
+  </div>
+  
+</section>
+
+<section class="lesson" id="operators" style="--ac:#34d399">
+  <div class="lesson-head">
+    <span class="licon">🧮</span>
+    <div>
+      <div class="lnum">LESSON 03</div>
+      <div class="ltitle">Operators &amp; Expressions</div>
+      <div class="lsub">Making Python do the maths for you</div>
+    </div>
+  </div>
+  <div class="lesson-cols">
+    <div class="anim-panel">
+      <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <rect x="40" y="20" width="120" height="165" rx="14" fill="#0d1627" stroke="#34d399" stroke-width="2.5"/>
+  <rect x="50" y="30" width="100" height="35" rx="8" fill="#052e16"/>
+  <text x="145" y="53" text-anchor="end" fill="#34d399" font-size="16" font-family="Fira Code,monospace" style="animation:calcBlink 2s step-end infinite">3+4×2=14</text>
+  <g fill="#1e3a5f" stroke="#334155" stroke-width="1">
+    <rect x="52" y="78" width="26" height="22" rx="5"/><rect x="86" y="78" width="26" height="22" rx="5"/>
+    <rect x="120" y="78" width="26" height="22" rx="5"/><rect x="52" y="108" width="26" height="22" rx="5"/>
+    <rect x="86" y="108" width="26" height="22" rx="5"/><rect x="120" y="108" width="26" height="22" rx="5"/>
+    <rect x="52" y="138" width="26" height="22" rx="5"/><rect x="86" y="138" width="60" height="22" rx="5"/>
+  </g>
+  <text x="65" y="93" text-anchor="middle" fill="#f472b6" font-size="12" font-family="Fira Code">+</text>
+  <text x="99" y="93" text-anchor="middle" fill="#f472b6" font-size="12" font-family="Fira Code">-</text>
+  <text x="133" y="93" text-anchor="middle" fill="#f472b6" font-size="12" font-family="Fira Code">×</text>
+  <text x="65" y="123" text-anchor="middle" fill="#fbbf24" font-size="11" font-family="Fira Code">7</text>
+  <text x="99" y="123" text-anchor="middle" fill="#fbbf24" font-size="11" font-family="Fira Code">8</text>
+  <text x="133" y="123" text-anchor="middle" fill="#fbbf24" font-size="11" font-family="Fira Code">9</text>
+  <text x="65" y="153" text-anchor="middle" fill="#fbbf24" font-size="11" font-family="Fira Code">0</text>
+  <text x="116" y="153" text-anchor="middle" fill="#34d399" font-size="12" font-family="Fira Code">=</text>
+</svg>
+    </div>
+    <div class="theory">
+      
+      <div class="theory-item">
+        <span class="tdot"></span>
+        <div>
+          <div class="tkey">Arithmetic Operators</div>
+          <div class="tval"><code>+</code> add &nbsp; <code>-</code> subtract &nbsp; <code>*</code> multiply &nbsp; <code>/</code> divide &nbsp; <code>**</code> power &nbsp; <code>%</code> remainder</div>
+        </div>
+      </div>
+      
+      <div class="theory-item">
+        <span class="tdot"></span>
+        <div>
+          <div class="tkey">Comparison Operators</div>
+          <div class="tval"><code>==</code> equal &nbsp; <code>!=</code> not equal &nbsp; <code>&gt;</code> greater &nbsp; <code>&lt;</code> less &nbsp; <code>&gt;=</code> greater-equal &nbsp; <code>&lt;=</code> less-equal</div>
+        </div>
+      </div>
+      
+      <div class="theory-item">
+        <span class="tdot"></span>
+        <div>
+          <div class="tkey">Logical Operators</div>
+          <div class="tval"><code>and</code> — both must be True &nbsp;|&nbsp; <code>or</code> — at least one True &nbsp;|&nbsp; <code>not</code> — flips True/False</div>
+        </div>
+      </div>
+      
+      <div class="theory-item">
+        <span class="tdot"></span>
+        <div>
+          <div class="tkey">Order of Operations</div>
+          <div class="tval">Python follows BODMAS: Brackets → Powers → Multiply/Divide → Add/Subtract. Use <code>()</code> to control order.</div>
+        </div>
+      </div>
+      
+      <div class="theory-item">
+        <span class="tdot"></span>
+        <div>
+          <div class="tkey">The % (Modulus)</div>
+          <div class="tval"><code>10 % 3</code> gives <b>1</b> because 10 ÷ 3 = 3 remainder 1. Very useful for checking even/odd numbers!</div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+  
+  <div class="code-sec">
+    <div class="sec-label">📖 Example Code</div>
+    <div class="code-wrap">
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      <pre class="code-block"><span class="cm"># Operators <span class="kw">in </span>action</span>
+a = <span class="nm">20</span>
+b = <span class="nm">6</span>
+
+<span class="fn">print</span>(<span class="st">&quot;Add:&quot;</span>, a + b)
+<span class="fn">print</span>(<span class="st">&quot;Subtract:&quot;</span>, a - b)
+<span class="fn">print</span>(<span class="st">&quot;Multiply:&quot;</span>, a * b)
+<span class="fn">print</span>(<span class="st">&quot;Divide:&quot;</span>, a / b)
+<span class="fn">print</span>(<span class="st">&quot;Power:&quot;</span>, a ** <span class="nm">2</span>)
+<span class="fn">print</span>(<span class="st">&quot;Remainder:&quot;</span>, a % b)
+
+<span class="cm"># Is a greater than b?</span>
+<span class="fn">print</span>(&quot;a &gt; b:&quot;, a &gt; b)
+<span class="cm"># Is a even?</span>
+<span class="fn">print</span>(<span class="st">&quot;a is even:&quot;</span>, a % <span class="nm">2</span> == <span class="nm">0</span>)</pre>
+    </div>
+    
+    <div class="sec-label" style="margin-top:12px;">📤 Expected Output</div>
+    <div class="out-block">Add: 26
+Subtract: 14
+Multiply: 120
+Divide: 3.3333333333333335
+Power: 400
+Remainder: 2
+a &gt; b: True
+a is even: True</div>
+    
+  </div>
+  <!-- LIVE CODE RUNNER -->
+  <div class="code-sec" style="padding-top:0;">
+    <div class="sec-label">🚀 Try It Yourself — Live Code Runner</div>
+    <div class="runner">
+      <div class="runner-tabs">
+        <button class="rtab on" onclick="switchTab(this,'edit','operators')">✏️ Editor</button>
+        <button class="rtab" onclick="switchTab(this,'out','operators')">📤 Output</button>
+      </div>
+      <div id="edit-operators" class="runner-editor">
+        <textarea id="code-operators" spellcheck="false" autocorrect="off" autocapitalize="off"># Operators in action
+a = 20
+b = 6
+
+print(&#34;Add:&#34;, a + b)
+print(&#34;Subtract:&#34;, a - b)
+print(&#34;Multiply:&#34;, a * b)
+print(&#34;Divide:&#34;, a / b)
+print(&#34;Power:&#34;, a ** 2)
+print(&#34;Remainder:&#34;, a % b)
+
+# Is a greater than b?
+print(&#34;a &gt; b:&#34;, a &gt; b)
+# Is a even?
+print(&#34;a is even:&#34;, a % 2 == 0)</textarea>
+      </div>
+      <div id="out-operators" style="display:none">
+        <div class="output-area"><div class="out-text info" id="result-operators">Run your code to see output here ▶</div></div>
+      </div>
+      <div class="runner-footer">
+        <button class="run-btn" onclick="runCode('operators')">▶ Run Code</button>
+        <button class="clear-btn" onclick="clearCode('operators','# Operators in action
+a = 20
+b = 6
+
+print(&#34;Add:&#34;, a + b)
+print(&#34;Subtract:&#34;, a - b)
+print(&#34;Multiply:&#34;, a * b)
+print(&#34;Divide:&#34;, a / b)
+print(&#34;Power:&#34;, a ** 2)
+print(&#34;Remainder:&#34;, a % b)
+
+# Is a greater than b?
+print(&#34;a &gt; b:&#34;, a &gt; b)
+# Is a even?
+print(&#34;a is even:&#34;, a % 2 == 0)')">↺ Reset</button>
+        <span class="py-status" id="status-operators">Python ready</span>
+      </div>
+    </div>
+    
+    <div class="task-box" style="border-color:#34d399">
+      <span class="task-icon">✏️</span>
+      <div class="task-text"><b>Your Task:</b> Calculate the area of a rectangle (length=12, width=7). Also check if 37 is odd.</div>
+    </div>
+    
+  </div>
+  
+</section>
+
+<section class="lesson" id="io" style="--ac:#818cf8">
+  <div class="lesson-head">
+    <span class="licon">⌨️</span>
+    <div>
+      <div class="lnum">LESSON 04</div>
+      <div class="ltitle">Input &amp; Output</div>
+      <div class="lsub">Talking to your program</div>
+    </div>
+  </div>
+  <div class="lesson-cols">
+    <div class="anim-panel">
+      <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <rect x="15" y="20" width="170" height="160" rx="12" fill="#030812" stroke="#1e3a5f" stroke-width="2"/>
+  <rect x="15" y="20" width="170" height="28" rx="12" fill="#1e3a5f"/>
+  <circle cx="32" cy="34" r="6" fill="#f87171"/><circle cx="50" cy="34" r="6" fill="#fbbf24"/><circle cx="68" cy="34" r="6" fill="#4ade80"/>
+  <text x="25" y="70" fill="#64748b" font-size="10" font-family="Fira Code,monospace">$ python3 app.py</text>
+  <text x="25" y="90" fill="#818cf8" font-size="10" font-family="Fira Code,monospace" style="animation:typeIn 0.5s ease 0.5s both">Enter name: Rahul</text>
+  <text x="25" y="110" fill="#4ade80" font-size="10" font-family="Fira Code,monospace" style="animation:typeIn 0.5s ease 1s both">Hello, Rahul! 🎉</text>
+  <text x="25" y="130" fill="#fbbf24" font-size="10" font-family="Fira Code,monospace" style="animation:typeIn 0.5s ease 1.5s both">Age: 15 years</text>
+  <text x="25" y="158" fill="#64748b" font-size="10" font-family="Fira Code,monospace">$ <tspan fill="#22d3ee" style="animation:blink 1s step-end infinite">█</tspan></text>
+</svg>
+    </div>
+    <div class="theory">
+      
+      <div class="theory-item">
+        <span class="tdot"></span>
+        <div>
+          <div class="tkey">The print() function</div>
+          <div class="tval"><code>print()</code> displays anything on the screen. You can print text, numbers, or variables. Separate items with commas.</div>
+        </div>
+      </div>
+      
+      <div class="theory-item">
+        <span class="tdot"></span>
+        <div>
+          <div class="tkey">The input() function</div>
+          <div class="tval"><code>input()</code> pauses the program and waits for the user to type something. It always returns a <b>string</b>.</div>
+        </div>
+      </div>
+      
+      <div class="theory-item">
+        <span class="tdot"></span>
+        <div>
+          <div class="tkey">Converting Input</div>
+          <div class="tval">Since input() returns text, use <code>int()</code> or <code>float()</code> to convert it: <code>age = int(input("Age: "))</code></div>
+        </div>
+      </div>
+      
+      <div class="theory-item">
+        <span class="tdot"></span>
+        <div>
+          <div class="tkey">f-Strings (Formatted Strings)</div>
+          <div class="tval">The cleanest way to mix text and variables: <code>f"Hello {name}, you are {age} years old!"</code></div>
+        </div>
+      </div>
+      
+      <div class="theory-item">
+        <span class="tdot"></span>
+        <div>
+          <div class="tkey">end and sep in print</div>
+          <div class="tval"><code>print("Hi", end="")</code> stops the newline. <code>print(1, 2, 3, sep="-")</code> prints <b>1-2-3</b>.</div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+  
+  <div class="code-sec">
+    <div class="sec-label">📖 Example Code</div>
+    <div class="code-wrap">
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      <pre class="code-block"><span class="cm"># Input <span class="kw">and </span>Output</span>
+<span class="cm"># (In this runner, <span class="fn">input</span>() uses preset values)</span>
+name = <span class="st">&quot;Rahul&quot;</span>
+birth_year = <span class="nm">2010</span>
+
+current_year = <span class="nm">2025</span>
+age = current_year - birth_year
+
+<span class="fn">print</span>(<span class="st">f&quot;Hello, {name}!&quot;</span>)
+<span class="fn">print</span>(<span class="st">f&quot;You are {age} years old.&quot;</span>)
+<span class="fn">print</span>(<span class="st">f&quot;By <span class="nm">2030</span>, you will be {<span class="nm">2030</span> - birth_year}.&quot;</span>)
+
+<span class="cm"># Formatting numbers</span>
+marks = <span class="nm">456.789</span>
+<span class="fn">print</span>(<span class="st">f&quot;Your marks: {marks:.<span class="nm">2</span>f}&quot;</span>)  <span class="cm"># <span class="nm">2</span> decimal places</span></pre>
+    </div>
+    
+    <div class="sec-label" style="margin-top:12px;">📤 Expected Output</div>
+    <div class="out-block">Hello, Rahul!
+You are 15 years old.
+By 2030, you will be 20.
+Your marks: 456.79</div>
+    
+  </div>
+  <!-- LIVE CODE RUNNER -->
+  <div class="code-sec" style="padding-top:0;">
+    <div class="sec-label">🚀 Try It Yourself — Live Code Runner</div>
+    <div class="runner">
+      <div class="runner-tabs">
+        <button class="rtab on" onclick="switchTab(this,'edit','io')">✏️ Editor</button>
+        <button class="rtab" onclick="switchTab(this,'out','io')">📤 Output</button>
+      </div>
+      <div id="edit-io" class="runner-editor">
+        <textarea id="code-io" spellcheck="false" autocorrect="off" autocapitalize="off"># Input and Output
+# (In this runner, input() uses preset values)
+name = &#34;Rahul&#34;
+birth_year = 2010
+
+current_year = 2025
+age = current_year - birth_year
+
+print(f&#34;Hello, {name}!&#34;)
+print(f&#34;You are {age} years old.&#34;)
+print(f&#34;By 2030, you will be {2030 - birth_year}.&#34;)
+
+# Formatting numbers
+marks = 456.789
+print(f&#34;Your marks: {marks:.2f}&#34;)  # 2 decimal places</textarea>
+      </div>
+      <div id="out-io" style="display:none">
+        <div class="output-area"><div class="out-text info" id="result-io">Run your code to see output here ▶</div></div>
+      </div>
+      <div class="runner-footer">
+        <button class="run-btn" onclick="runCode('io')">▶ Run Code</button>
+        <button class="clear-btn" onclick="clearCode('io','# Input and Output
+# (In this runner, input() uses preset values)
+name = &#34;Rahul&#34;
+birth_year = 2010
+
+current_year = 2025
+age = current_year - birth_year
+
+print(f&#34;Hello, {name}!&#34;)
+print(f&#34;You are {age} years old.&#34;)
+print(f&#34;By 2030, you will be {2030 - birth_year}.&#34;)
+
+# Formatting numbers
+marks = 456.789
+print(f&#34;Your marks: {marks:.2f}&#34;)  # 2 decimal places')">↺ Reset</button>
+        <span class="py-status" id="status-io">Python ready</span>
+      </div>
+    </div>
+    
+    <div class="task-box" style="border-color:#818cf8">
+      <span class="task-icon">✏️</span>
+      <div class="task-text"><b>Your Task:</b> Write a program that calculates the simple interest: P=5000, R=8, T=3. Print it neatly with f-strings.</div>
+    </div>
+    
+  </div>
+  
+</section>
+
+<section class="lesson" id="conditions" style="--ac:#f472b6">
+  <div class="lesson-head">
+    <span class="licon">🔀</span>
+    <div>
+      <div class="lnum">LESSON 05</div>
+      <div class="ltitle">If / Elif / Else</div>
+      <div class="lsub">Making decisions in your code</div>
+    </div>
+  </div>
+  <div class="lesson-cols">
+    <div class="anim-panel">
+      <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <rect x="75" y="15" width="50" height="145" rx="14" fill="#0d1627" stroke="#334155" stroke-width="2"/>
+  <circle cx="100" cy="50" r="18" fill="#1e293b"><animate attributeName="fill" values="#f87171;#1e293b;#1e293b;#f87171" dur="3s" repeatCount="indefinite"/></circle>
+  <circle cx="100" cy="88" r="18" fill="#1e293b"><animate attributeName="fill" values="#1e293b;#fbbf24;#1e293b;#1e293b" dur="3s" repeatCount="indefinite"/></circle>
+  <circle cx="100" cy="126" r="18" fill="#1e293b"><animate attributeName="fill" values="#1e293b;#1e293b;#4ade80;#1e293b" dur="3s" repeatCount="indefinite"/></circle>
+  <line x1="100" y1="160" x2="100" y2="190" stroke="#334155" stroke-width="6" stroke-linecap="round"/>
+  <text x="100" y="198" text-anchor="middle" fill="#94a3b8" font-size="9" font-family="Space Grotesk">if / elif / else</text>
+</svg>
+    </div>
+    <div class="theory">
+      
+      <div class="theory-item">
+        <span class="tdot"></span>
+        <div>
+          <div class="tkey">What are Conditions?</div>
+          <div class="tval">Conditions let your program choose what to do based on data — just like YOU decide what to wear based on the weather!</div>
+        </div>
+      </div>
+      
+      <div class="theory-item">
+        <span class="tdot"></span>
+        <div>
+          <div class="tkey">if statement</div>
+          <div class="tval">Runs a block of code <b>only if</b> the condition is True. The colon <code>:</code> and indentation (4 spaces) are mandatory.</div>
+        </div>
+      </div>
+      
+      <div class="theory-item">
+        <span class="tdot"></span>
+        <div>
+          <div class="tkey">else statement</div>
+          <div class="tval">Runs when the <code>if</code> condition is False. It's the 'otherwise' part.</div>
+        </div>
+      </div>
+      
+      <div class="theory-item">
+        <span class="tdot"></span>
+        <div>
+          <div class="tkey">elif (else-if)</div>
+          <div class="tval">Checks a new condition when the previous <code>if</code> was False. You can have many <code>elif</code> blocks.</div>
+        </div>
+      </div>
+      
+      <div class="theory-item">
+        <span class="tdot"></span>
+        <div>
+          <div class="tkey">Nested Conditions</div>
+          <div class="tval">You can put an <code>if</code> inside another <code>if</code>. This is called nesting — use it carefully to avoid confusion.</div>
+        </div>
+      </div>
+      
+      <div class="theory-item">
+        <span class="tdot"></span>
+        <div>
+          <div class="tkey">Indentation is KEY!</div>
+          <div class="tval">Python uses <b>4 spaces</b> of indentation to define code blocks. Unlike other languages, this is not optional — it will cause an error!</div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+  
+  <div class="code-sec">
+    <div class="sec-label">📖 Example Code</div>
+    <div class="code-wrap">
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      <pre class="code-block"><span class="cm"># Grade Calculator</span>
+marks = <span class="nm">78</span>
+
+<span class="kw">if </span>marks &gt;= <span class="nm">90</span>:
+    grade = <span class="st">&quot;A+&quot;</span>
+    remark = <span class="st">&quot;Outstanding!&quot;</span>
+el<span class="kw">if </span>marks &gt;= <span class="nm">75</span>:
+    grade = <span class="st">&quot;A&quot;</span>
+    remark = <span class="st">&quot;Excellent!&quot;</span>
+el<span class="kw">if </span>marks &gt;= <span class="nm">60</span>:
+    grade = <span class="st">&quot;B&quot;</span>
+    remark = <span class="st">&quot;Good work!&quot;</span>
+el<span class="kw">if </span>marks &gt;= <span class="nm">45</span>:
+    grade = <span class="st">&quot;C&quot;</span>
+    remark = <span class="st">&quot;Keep improving!&quot;</span>
+el<span class="kw">if </span>marks &gt;= <span class="nm">33</span>:
+    grade = <span class="st">&quot;D&quot;</span>
+    remark = <span class="st">&quot;Just <span class="kw">pass</span>ed.&quot;</span>
+<span class="kw">else:</span>
+    grade = <span class="st">&quot;F&quot;</span>
+    remark = <span class="st">&quot;Better luck next time.&quot;</span>
+
+<span class="fn">print</span>(<span class="st">f&quot;Marks: {marks}&quot;</span>)
+<span class="fn">print</span>(<span class="st">f&quot;Grade: {grade}&quot;</span>)
+<span class="fn">print</span>(<span class="st">f&quot;Remark: {remark}&quot;</span>)</pre>
+    </div>
+    
+    <div class="sec-label" style="margin-top:12px;">📤 Expected Output</div>
+    <div class="out-block">Marks: 78
+Grade: A
+Remark: Excellent!</div>
+    
+  </div>
+  <!-- LIVE CODE RUNNER -->
+  <div class="code-sec" style="padding-top:0;">
+    <div class="sec-label">🚀 Try It Yourself — Live Code Runner</div>
+    <div class="runner">
+      <div class="runner-tabs">
+        <button class="rtab on" onclick="switchTab(this,'edit','conditions')">✏️ Editor</button>
+        <button class="rtab" onclick="switchTab(this,'out','conditions')">📤 Output</button>
+      </div>
+      <div id="edit-conditions" class="runner-editor">
+        <textarea id="code-conditions" spellcheck="false" autocorrect="off" autocapitalize="off"># Grade Calculator
+marks = 78
+
+if marks &gt;= 90:
+    grade = &#34;A+&#34;
+    remark = &#34;Outstanding!&#34;
+elif marks &gt;= 75:
+    grade = &#34;A&#34;
+    remark = &#34;Excellent!&#34;
+elif marks &gt;= 60:
+    grade = &#34;B&#34;
+    remark = &#34;Good work!&#34;
+elif marks &gt;= 45:
+    grade = &#34;C&#34;
+    remark = &#34;Keep improving!&#34;
+elif marks &gt;= 33:
+    grade = &#34;D&#34;
+    remark = &#34;Just passed.&#34;
+else:
+    grade = &#34;F&#34;
+    remark = &#34;Better luck next time.&#34;
+
+print(f&#34;Marks: {marks}&#34;)
+print(f&#34;Grade: {grade}&#34;)
+print(f&#34;Remark: {remark}&#34;)</textarea>
+      </div>
+      <div id="out-conditions" style="display:none">
+        <div class="output-area"><div class="out-text info" id="result-conditions">Run your code to see output here ▶</div></div>
+      </div>
+      <div class="runner-footer">
+        <button class="run-btn" onclick="runCode('conditions')">▶ Run Code</button>
+        <button class="clear-btn" onclick="clearCode('conditions','# Grade Calculator
+marks = 78
+
+if marks &gt;= 90:
+    grade = &#34;A+&#34;
+    remark = &#34;Outstanding!&#34;
+elif marks &gt;= 75:
+    grade = &#34;A&#34;
+    remark = &#34;Excellent!&#34;
+elif marks &gt;= 60:
+    grade = &#34;B&#34;
+    remark = &#34;Good work!&#34;
+elif marks &gt;= 45:
+    grade = &#34;C&#34;
+    remark = &#34;Keep improving!&#34;
+elif marks &gt;= 33:
+    grade = &#34;D&#34;
+    remark = &#34;Just passed.&#34;
+else:
+    grade = &#34;F&#34;
+    remark = &#34;Better luck next time.&#34;
+
+print(f&#34;Marks: {marks}&#34;)
+print(f&#34;Grade: {grade}&#34;)
+print(f&#34;Remark: {remark}&#34;)')">↺ Reset</button>
+        <span class="py-status" id="status-conditions">Python ready</span>
+      </div>
+    </div>
+    
+    <div class="task-box" style="border-color:#f472b6">
+      <span class="task-icon">✏️</span>
+      <div class="task-text"><b>Your Task:</b> Write a program that checks if a number is positive, negative, or zero. Test it with the number -5.</div>
+    </div>
+    
+  </div>
+  
+</section>
+
+<section class="lesson" id="loops" style="--ac:#a78bfa">
+  <div class="lesson-head">
+    <span class="licon">🔄</span>
+    <div>
+      <div class="lnum">LESSON 06</div>
+      <div class="ltitle">Loops (for &amp; while)</div>
+      <div class="lsub">Repeating actions without repeating yourself</div>
+    </div>
+  </div>
+  <div class="lesson-cols">
+    <div class="anim-panel">
+      <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="100" cy="95" r="60" fill="none" stroke="#1e3a5f" stroke-width="2" stroke-dasharray="10 5"/>
+  <path d="M100 35 A60 60 0 1 1 50 147" fill="none" stroke="#a78bfa" stroke-width="6" stroke-linecap="round">
+    <animateTransform attributeName="transform" type="rotate" from="0 100 95" to="360 100 95" dur="3s" repeatCount="indefinite"/>
+  </path>
+  <polygon points="50,147 35,135 55,128" fill="#a78bfa"/>
+  <text x="100" y="92" text-anchor="middle" fill="#a78bfa" font-size="13" font-weight="700" font-family="Space Grotesk,sans-serif">for / while</text>
+  <text x="100" y="110" text-anchor="middle" fill="#64748b" font-size="10" font-family="Space Grotesk">repeating...</text>
+  <text x="100" y="185" text-anchor="middle" fill="#a78bfa" font-size="10" font-family="Space Grotesk">range(1, 11)</text>
+</svg>
+    </div>
+    <div class="theory">
+      
+      <div class="theory-item">
+        <span class="tdot"></span>
+        <div>
+          <div class="tkey">Why Loops?</div>
+          <div class="tval">Imagine printing numbers 1 to 100. Without loops, you'd write 100 print() lines. With a loop, just 2 lines!</div>
+        </div>
+      </div>
+      
+      <div class="theory-item">
+        <span class="tdot"></span>
+        <div>
+          <div class="tkey">for loop</div>
+          <div class="tval">Repeats for each item in a sequence. <code>range(1, 11)</code> gives numbers 1 to 10. <code>range(n)</code> gives 0 to n-1.</div>
+        </div>
+      </div>
+      
+      <div class="theory-item">
+        <span class="tdot"></span>
+        <div>
+          <div class="tkey">while loop</div>
+          <div class="tval">Keeps repeating <b>while</b> a condition is True. Use when you don't know beforehand how many times to repeat.</div>
+        </div>
+      </div>
+      
+      <div class="theory-item">
+        <span class="tdot"></span>
+        <div>
+          <div class="tkey">break</div>
+          <div class="tval"><code>break</code> immediately exits the loop. Useful for stopping when a condition is met.</div>
+        </div>
+      </div>
+      
+      <div class="theory-item">
+        <span class="tdot"></span>
+        <div>
+          <div class="tkey">continue</div>
+          <div class="tval"><code>continue</code> skips the rest of the current iteration and goes to the next one.</div>
+        </div>
+      </div>
+      
+      <div class="theory-item">
+        <span class="tdot"></span>
+        <div>
+          <div class="tkey">Nested Loops</div>
+          <div class="tval">A loop inside a loop. Used for patterns, tables, and grids. The inner loop completes fully for each outer iteration.</div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+  
+  <div class="code-sec">
+    <div class="sec-label">📖 Example Code</div>
+    <div class="code-wrap">
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      <pre class="code-block"><span class="cm"># Loops demo</span>
+<span class="cm"># <span class="nm">1.</span> Multiplication Table</span>
+n = <span class="nm">7</span>
+<span class="fn">print</span>(<span class="st">f&quot;--- Table of {n} ---&quot;</span>)
+<span class="kw">f<span class="kw">or </span></span>i <span class="kw">in </span><span class="fn">range</span>(<span class="nm">1</span>, <span class="nm">11</span>):
+    <span class="fn">print</span>(<span class="st">f&quot;{n} x {i:<span class="nm">2</span>} = {n*i:<span class="nm">3</span>}&quot;</span>)
+
+<span class="cm"># <span class="nm">2.</span> Sum of first <span class="nm">10</span> numbers</span>
+total = <span class="nm">0</span>
+<span class="kw">f<span class="kw">or </span></span>i <span class="kw">in </span><span class="fn">range</span>(<span class="nm">1</span>, <span class="nm">11</span>):
+    total += i
+<span class="fn">print</span>(<span class="st">f&quot;\nSum of <span class="nm">1</span> to <span class="nm">10</span> = {total}&quot;</span>)
+
+<span class="cm"># <span class="nm">3.</span> Pattern</span>
+<span class="fn">print</span>(<span class="st">&quot;\nStar Pattern:&quot;</span>)
+<span class="kw">f<span class="kw">or </span></span>i <span class="kw">in </span><span class="fn">range</span>(<span class="nm">1</span>, <span class="nm">6</span>):
+    <span class="fn">print</span>(<span class="st">&quot;* &quot;</span> * i)</pre>
+    </div>
+    
+    <div class="sec-label" style="margin-top:12px;">📤 Expected Output</div>
+    <div class="out-block">--- Table of 7 ---
+7 x  1 =   7
+7 x  2 =  14
+7 x  3 =  21
+7 x  4 =  28
+7 x  5 =  35
+7 x  6 =  42
+7 x  7 =  49
+7 x  8 =  56
+7 x  9 =  63
+7 x 10 =  70
+
+Sum of 1 to 10 = 55
+
+Star Pattern:
+* 
+* * 
+* * * 
+* * * * 
+* * * * * </div>
+    
+  </div>
+  <!-- LIVE CODE RUNNER -->
+  <div class="code-sec" style="padding-top:0;">
+    <div class="sec-label">🚀 Try It Yourself — Live Code Runner</div>
+    <div class="runner">
+      <div class="runner-tabs">
+        <button class="rtab on" onclick="switchTab(this,'edit','loops')">✏️ Editor</button>
+        <button class="rtab" onclick="switchTab(this,'out','loops')">📤 Output</button>
+      </div>
+      <div id="edit-loops" class="runner-editor">
+        <textarea id="code-loops" spellcheck="false" autocorrect="off" autocapitalize="off"># Loops demo
+# 1. Multiplication Table
+n = 7
+print(f&#34;--- Table of {n} ---&#34;)
+for i in range(1, 11):
+    print(f&#34;{n} x {i:2} = {n*i:3}&#34;)
+
+# 2. Sum of first 10 numbers
+total = 0
+for i in range(1, 11):
+    total += i
+print(f&#34;\nSum of 1 to 10 = {total}&#34;)
+
+# 3. Pattern
+print(&#34;\nStar Pattern:&#34;)
+for i in range(1, 6):
+    print(&#34;* &#34; * i)</textarea>
+      </div>
+      <div id="out-loops" style="display:none">
+        <div class="output-area"><div class="out-text info" id="result-loops">Run your code to see output here ▶</div></div>
+      </div>
+      <div class="runner-footer">
+        <button class="run-btn" onclick="runCode('loops')">▶ Run Code</button>
+        <button class="clear-btn" onclick="clearCode('loops','# Loops demo
+# 1. Multiplication Table
+n = 7
+print(f&#34;--- Table of {n} ---&#34;)
+for i in range(1, 11):
+    print(f&#34;{n} x {i:2} = {n*i:3}&#34;)
+
+# 2. Sum of first 10 numbers
+total = 0
+for i in range(1, 11):
+    total += i
+print(f&#34;\nSum of 1 to 10 = {total}&#34;)
+
+# 3. Pattern
+print(&#34;\nStar Pattern:&#34;)
+for i in range(1, 6):
+    print(&#34;* &#34; * i)')">↺ Reset</button>
+        <span class="py-status" id="status-loops">Python ready</span>
+      </div>
+    </div>
+    
+    <div class="task-box" style="border-color:#a78bfa">
+      <span class="task-icon">✏️</span>
+      <div class="task-text"><b>Your Task:</b> Write a loop that prints all even numbers from 2 to 20. Then print their sum.</div>
+    </div>
+    
+  </div>
+  
+</section>
+
+<section class="lesson" id="strings" style="--ac:#fb923c">
+  <div class="lesson-head">
+    <span class="licon">📝</span>
+    <div>
+      <div class="lnum">LESSON 07</div>
+      <div class="ltitle">Strings</div>
+      <div class="lsub">Working with text in Python</div>
+    </div>
+  </div>
+  <div class="lesson-cols">
+    <div class="anim-panel">
+      <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <text x="100" y="50" text-anchor="middle" fill="#fb923c" font-size="28" font-weight="700" font-family="Fira Code,monospace" style="animation:pulse 2s ease-in-out infinite">"Python"</text>
+  <g font-family="Fira Code,monospace" font-size="11">
+    <rect x="30" y="65" width="22" height="26" rx="5" fill="#1e3a5f" stroke="#fb923c" stroke-width="1.5"/>
+    <text x="41" y="82" text-anchor="middle" fill="#4ade80">P</text>
+    <text x="41" y="100" text-anchor="middle" fill="#64748b" font-size="9">0</text>
+    <rect x="56" y="65" width="22" height="26" rx="5" fill="#1e3a5f" stroke="#334155"/>
+    <text x="67" y="82" text-anchor="middle" fill="#e2e8f0">y</text><text x="67" y="100" text-anchor="middle" fill="#64748b" font-size="9">1</text>
+    <rect x="82" y="65" width="22" height="26" rx="5" fill="#1e3a5f" stroke="#334155"/>
+    <text x="93" y="82" text-anchor="middle" fill="#e2e8f0">t</text><text x="93" y="100" text-anchor="middle" fill="#64748b" font-size="9">2</text>
+    <rect x="108" y="65" width="22" height="26" rx="5" fill="#1e3a5f" stroke="#334155"/>
+    <text x="119" y="82" text-anchor="middle" fill="#e2e8f0">h</text><text x="119" y="100" text-anchor="middle" fill="#64748b" font-size="9">3</text>
+    <rect x="134" y="65" width="22" height="26" rx="5" fill="#1e3a5f" stroke="#334155"/>
+    <text x="145" y="82" text-anchor="middle" fill="#e2e8f0">o</text><text x="145" y="100" text-anchor="middle" fill="#64748b" font-size="9">4</text>
+    <rect x="160" y="65" width="22" height="26" rx="5" fill="#0d2010" stroke="#4ade80" stroke-width="1.5"/>
+    <text x="171" y="82" text-anchor="middle" fill="#4ade80">n</text><text x="171" y="100" text-anchor="middle" fill="#64748b" font-size="9">-1</text>
+  </g>
+  <text x="30" y="120" fill="#fb923c" font-size="10" font-family="Fira Code">.upper() → PYTHON</text>
+  <text x="30" y="138" fill="#818cf8" font-size="10" font-family="Fira Code">.lower() → python</text>
+  <text x="30" y="156" fill="#4ade80" font-size="10" font-family="Fira Code">len()   → 6</text>
+  <text x="30" y="174" fill="#fbbf24" font-size="10" font-family="Fira Code">[0:3]   → Pyt</text>
+</svg>
+    </div>
+    <div class="theory">
+      
+      <div class="theory-item">
+        <span class="tdot"></span>
+        <div>
+          <div class="tkey">String Basics</div>
+          <div class="tval">Strings are text enclosed in single <code>'hello'</code> or double <code>"hello"</code> quotes. Both work the same way.</div>
+        </div>
+      </div>
+      
+      <div class="theory-item">
+        <span class="tdot"></span>
+        <div>
+          <div class="tkey">String Indexing</div>
+          <div class="tval">Each character has a position starting from 0. <code>s[0]</code> is first, <code>s[-1]</code> is last. Python also counts from the end!</div>
+        </div>
+      </div>
+      
+      <div class="theory-item">
+        <span class="tdot"></span>
+        <div>
+          <div class="tkey">String Slicing</div>
+          <div class="tval"><code>s[1:4]</code> gives characters at positions 1, 2, 3 (not 4). <code>s[:3]</code> means from start, <code>s[3:]</code> means till end.</div>
+        </div>
+      </div>
+      
+      <div class="theory-item">
+        <span class="tdot"></span>
+        <div>
+          <div class="tkey">String Methods</div>
+          <div class="tval"><code>.upper()</code>, <code>.lower()</code>, <code>.strip()</code>, <code>.replace()</code>, <code>.split()</code>, <code>.find()</code> — Python has many built-in string tools.</div>
+        </div>
+      </div>
+      
+      <div class="theory-item">
+        <span class="tdot"></span>
+        <div>
+          <div class="tkey">String + len()</div>
+          <div class="tval"><code>len("hello")</code> gives 5. You can also use <code>+</code> to join strings (concatenation) and <code>*</code> to repeat.</div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+  
+  <div class="code-sec">
+    <div class="sec-label">📖 Example Code</div>
+    <div class="code-wrap">
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      <pre class="code-block"><span class="cm"># Strings <span class="kw">in </span>Python</span>
+name = <span class="st">&quot;Python Programming&quot;</span>
+
+<span class="fn">print</span>(<span class="st">&quot;Original:&quot;</span>, name)
+<span class="fn">print</span>(<span class="st">&quot;Upper:&quot;</span>, name.upper())
+<span class="fn">print</span>(<span class="st">&quot;Lower:&quot;</span>, name.lower())
+<span class="fn">print</span>(<span class="st">&quot;Length:&quot;</span>, <span class="fn">len</span>(name))
+<span class="fn">print</span>(<span class="st">&quot;First char:&quot;</span>, name[<span class="nm">0</span>])
+<span class="fn">print</span>(<span class="st">&quot;Last char:&quot;</span>, name[-<span class="nm">1</span>])
+<span class="fn">print</span>(<span class="st">&quot;Slice [<span class="nm">0</span>:<span class="nm">6</span>]:&quot;</span>, name[<span class="nm">0</span>:<span class="nm">6</span>])
+<span class="fn">print</span>(<span class="st">&quot;Replace:&quot;</span>, name.replace(<span class="st">&quot;Python&quot;</span>, <span class="st">&quot;Awesome&quot;</span>))
+<span class="fn">print</span>(<span class="st">&quot;Split:&quot;</span>, name.split(<span class="st">&quot; &quot;</span>))
+<span class="fn">print</span>(<span class="st">&quot;Starts with P:&quot;</span>, name.startswith(<span class="st">&quot;P&quot;</span>))</pre>
+    </div>
+    
+    <div class="sec-label" style="margin-top:12px;">📤 Expected Output</div>
+    <div class="out-block">Original: Python Programming
+Upper: PYTHON PROGRAMMING
+Lower: python programming
+Length: 18
+First char: P
+Last char: g
+Slice [0:6]: Python
+Replace: Awesome Programming
+Split: [&#39;Python&#39;, &#39;Programming&#39;]
+Starts with P: True</div>
+    
+  </div>
+  <!-- LIVE CODE RUNNER -->
+  <div class="code-sec" style="padding-top:0;">
+    <div class="sec-label">🚀 Try It Yourself — Live Code Runner</div>
+    <div class="runner">
+      <div class="runner-tabs">
+        <button class="rtab on" onclick="switchTab(this,'edit','strings')">✏️ Editor</button>
+        <button class="rtab" onclick="switchTab(this,'out','strings')">📤 Output</button>
+      </div>
+      <div id="edit-strings" class="runner-editor">
+        <textarea id="code-strings" spellcheck="false" autocorrect="off" autocapitalize="off"># Strings in Python
+name = &#34;Python Programming&#34;
+
+print(&#34;Original:&#34;, name)
+print(&#34;Upper:&#34;, name.upper())
+print(&#34;Lower:&#34;, name.lower())
+print(&#34;Length:&#34;, len(name))
+print(&#34;First char:&#34;, name[0])
+print(&#34;Last char:&#34;, name[-1])
+print(&#34;Slice [0:6]:&#34;, name[0:6])
+print(&#34;Replace:&#34;, name.replace(&#34;Python&#34;, &#34;Awesome&#34;))
+print(&#34;Split:&#34;, name.split(&#34; &#34;))
+print(&#34;Starts with P:&#34;, name.startswith(&#34;P&#34;))</textarea>
+      </div>
+      <div id="out-strings" style="display:none">
+        <div class="output-area"><div class="out-text info" id="result-strings">Run your code to see output here ▶</div></div>
+      </div>
+      <div class="runner-footer">
+        <button class="run-btn" onclick="runCode('strings')">▶ Run Code</button>
+        <button class="clear-btn" onclick="clearCode('strings','# Strings in Python
+name = &#34;Python Programming&#34;
+
+print(&#34;Original:&#34;, name)
+print(&#34;Upper:&#34;, name.upper())
+print(&#34;Lower:&#34;, name.lower())
+print(&#34;Length:&#34;, len(name))
+print(&#34;First char:&#34;, name[0])
+print(&#34;Last char:&#34;, name[-1])
+print(&#34;Slice [0:6]:&#34;, name[0:6])
+print(&#34;Replace:&#34;, name.replace(&#34;Python&#34;, &#34;Awesome&#34;))
+print(&#34;Split:&#34;, name.split(&#34; &#34;))
+print(&#34;Starts with P:&#34;, name.startswith(&#34;P&#34;))')">↺ Reset</button>
+        <span class="py-status" id="status-strings">Python ready</span>
+      </div>
+    </div>
+    
+    <div class="task-box" style="border-color:#fb923c">
+      <span class="task-icon">✏️</span>
+      <div class="task-text"><b>Your Task:</b> Take the string &#39;Hello World&#39;. Reverse it, count vowels in it, and check if it contains &#39;World&#39;.</div>
+    </div>
+    
+  </div>
+  
+</section>
+
+<section class="lesson" id="lists" style="--ac:#2dd4bf">
+  <div class="lesson-head">
+    <span class="licon">📋</span>
+    <div>
+      <div class="lnum">LESSON 08</div>
+      <div class="ltitle">Lists</div>
+      <div class="lsub">Storing multiple values in one place</div>
+    </div>
+  </div>
+  <div class="lesson-cols">
+    <div class="anim-panel">
+      <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <text x="100" y="25" text-anchor="middle" fill="#2dd4bf" font-size="12" font-family="Space Grotesk,sans-serif" font-weight="700">marks = [85, 92, 78, 95, 88]</text>
+  <g font-family="Fira Code,monospace">
+    <rect x="18" y="35" width="32" height="36" rx="6" fill="#052e16" stroke="#2dd4bf" stroke-width="2"/><text x="34" y="57" text-anchor="middle" fill="#2dd4bf" font-size="13" font-weight="700">85</text><text x="34" y="82" text-anchor="middle" fill="#64748b" font-size="9">[0]</text>
+    <rect x="56" y="35" width="32" height="36" rx="6" fill="#0d1627" stroke="#334155"/><text x="72" y="57" text-anchor="middle" fill="#e2e8f0" font-size="13">92</text><text x="72" y="82" text-anchor="middle" fill="#64748b" font-size="9">[1]</text>
+    <rect x="94" y="35" width="32" height="36" rx="6" fill="#0d1627" stroke="#334155"/><text x="110" y="57" text-anchor="middle" fill="#e2e8f0" font-size="13">78</text><text x="110" y="82" text-anchor="middle" fill="#64748b" font-size="9">[2]</text>
+    <rect x="132" y="35" width="32" height="36" rx="6" fill="#0d1627" stroke="#334155"/><text x="148" y="57" text-anchor="middle" fill="#e2e8f0" font-size="13">95</text><text x="148" y="82" text-anchor="middle" fill="#64748b" font-size="9">[3]</text>
+    <rect x="170" y="35" width="32" height="36" rx="6" fill="#2d0e00" stroke="#fb923c" stroke-width="1.5"/><text x="186" y="57" text-anchor="middle" fill="#fb923c" font-size="13">88</text><text x="186" y="82" text-anchor="middle" fill="#64748b" font-size="9">[-1]</text>
+  </g>
+  <text x="15" y="108" fill="#4ade80" font-size="11" font-family="Fira Code">max(marks)  → 95</text>
+  <text x="15" y="126" fill="#f472b6" font-size="11" font-family="Fira Code">min(marks)  → 78</text>
+  <text x="15" y="144" fill="#fbbf24" font-size="11" font-family="Fira Code">sum(marks)  → 438</text>
+  <text x="15" y="162" fill="#818cf8" font-size="11" font-family="Fira Code">len(marks)  → 5</text>
+  <text x="15" y="180" fill="#2dd4bf" font-size="11" font-family="Fira Code">.sort() → [78,85,88,92,95]</text>
+</svg>
+    </div>
+    <div class="theory">
+      
+      <div class="theory-item">
+        <span class="tdot"></span>
+        <div>
+          <div class="tkey">What is a List?</div>
+          <div class="tval">A list stores <b>many values</b> in one variable, in order. Like a shopping list! Written with square brackets: <code>[1, 2, 3]</code></div>
+        </div>
+      </div>
+      
+      <div class="theory-item">
+        <span class="tdot"></span>
+        <div>
+          <div class="tkey">Indexing &amp; Slicing</div>
+          <div class="tval">Same as strings — <code>list[0]</code> is first item, <code>list[-1]</code> is last. Slicing works the same way too.</div>
+        </div>
+      </div>
+      
+      <div class="theory-item">
+        <span class="tdot"></span>
+        <div>
+          <div class="tkey">Adding Items</div>
+          <div class="tval"><code>.append(item)</code> adds to the end. <code>.insert(pos, item)</code> adds at a specific position.</div>
+        </div>
+      </div>
+      
+      <div class="theory-item">
+        <span class="tdot"></span>
+        <div>
+          <div class="tkey">Removing Items</div>
+          <div class="tval"><code>.remove(value)</code> removes by value. <code>.pop(index)</code> removes by position (default: last item).</div>
+        </div>
+      </div>
+      
+      <div class="theory-item">
+        <span class="tdot"></span>
+        <div>
+          <div class="tkey">Useful List Methods</div>
+          <div class="tval"><code>.sort()</code> sorts in place. <code>.reverse()</code> reverses. <code>len(list)</code> gives count. <code>sum(list)</code> adds all numbers.</div>
+        </div>
+      </div>
+      
+      <div class="theory-item">
+        <span class="tdot"></span>
+        <div>
+          <div class="tkey">Looping a List</div>
+          <div class="tval">Use <code>for item in list:</code> to go through each element one by one — very powerful!</div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+  
+  <div class="code-sec">
+    <div class="sec-label">📖 Example Code</div>
+    <div class="code-wrap">
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      <pre class="code-block"><span class="cm"># Lists <span class="kw">in </span>Python</span>
+marks = [<span class="nm">85</span>, <span class="nm">92</span>, <span class="nm">78</span>, <span class="nm">95</span>, <span class="nm">88</span>]
+
+<span class="fn">print</span>(<span class="st">&quot;Marks:&quot;</span>, marks)
+<span class="fn">print</span>(<span class="st">&quot;Highest:&quot;</span>, <span class="fn">max</span>(marks))
+<span class="fn">print</span>(<span class="st">&quot;Lowest:&quot;</span>, <span class="fn">min</span>(marks))
+<span class="fn">print</span>(<span class="st">&quot;Total:&quot;</span>, <span class="fn">sum</span>(marks))
+<span class="fn">print</span>(<span class="st">&quot;Average:&quot;</span>, <span class="fn">sum</span>(marks) / <span class="fn">len</span>(marks))
+
+<span class="cm"># Add <span class="kw">and </span>remove</span>
+marks.append(<span class="nm">91</span>)
+<span class="fn">print</span>(<span class="st">&quot;After append:&quot;</span>, marks)
+marks.sort()
+<span class="fn">print</span>(<span class="st">&quot;Sorted:&quot;</span>, marks)
+
+<span class="cm"># Loop through list</span>
+subjects = [<span class="st">&quot;Math&quot;</span>, <span class="st">&quot;Science&quot;</span>, <span class="st">&quot;English&quot;</span>]
+<span class="kw">f<span class="kw">or </span></span>sub <span class="kw">in </span>subjects:
+    <span class="fn">print</span>(<span class="st">&quot;Subject:&quot;</span>, sub)</pre>
+    </div>
+    
+    <div class="sec-label" style="margin-top:12px;">📤 Expected Output</div>
+    <div class="out-block">Marks: [85, 92, 78, 95, 88]
+Highest: 95
+Lowest: 78
+Total: 438
+Average: 87.6
+After append: [85, 92, 78, 95, 88, 91]
+Sorted: [78, 85, 88, 91, 92, 95]
+Subject: Math
+Subject: Science
+Subject: English</div>
+    
+  </div>
+  <!-- LIVE CODE RUNNER -->
+  <div class="code-sec" style="padding-top:0;">
+    <div class="sec-label">🚀 Try It Yourself — Live Code Runner</div>
+    <div class="runner">
+      <div class="runner-tabs">
+        <button class="rtab on" onclick="switchTab(this,'edit','lists')">✏️ Editor</button>
+        <button class="rtab" onclick="switchTab(this,'out','lists')">📤 Output</button>
+      </div>
+      <div id="edit-lists" class="runner-editor">
+        <textarea id="code-lists" spellcheck="false" autocorrect="off" autocapitalize="off"># Lists in Python
+marks = [85, 92, 78, 95, 88]
+
+print(&#34;Marks:&#34;, marks)
+print(&#34;Highest:&#34;, max(marks))
+print(&#34;Lowest:&#34;, min(marks))
+print(&#34;Total:&#34;, sum(marks))
+print(&#34;Average:&#34;, sum(marks) / len(marks))
+
+# Add and remove
+marks.append(91)
+print(&#34;After append:&#34;, marks)
+marks.sort()
+print(&#34;Sorted:&#34;, marks)
+
+# Loop through list
+subjects = [&#34;Math&#34;, &#34;Science&#34;, &#34;English&#34;]
+for sub in subjects:
+    print(&#34;Subject:&#34;, sub)</textarea>
+      </div>
+      <div id="out-lists" style="display:none">
+        <div class="output-area"><div class="out-text info" id="result-lists">Run your code to see output here ▶</div></div>
+      </div>
+      <div class="runner-footer">
+        <button class="run-btn" onclick="runCode('lists')">▶ Run Code</button>
+        <button class="clear-btn" onclick="clearCode('lists','# Lists in Python
+marks = [85, 92, 78, 95, 88]
+
+print(&#34;Marks:&#34;, marks)
+print(&#34;Highest:&#34;, max(marks))
+print(&#34;Lowest:&#34;, min(marks))
+print(&#34;Total:&#34;, sum(marks))
+print(&#34;Average:&#34;, sum(marks) / len(marks))
+
+# Add and remove
+marks.append(91)
+print(&#34;After append:&#34;, marks)
+marks.sort()
+print(&#34;Sorted:&#34;, marks)
+
+# Loop through list
+subjects = [&#34;Math&#34;, &#34;Science&#34;, &#34;English&#34;]
+for sub in subjects:
+    print(&#34;Subject:&#34;, sub)')">↺ Reset</button>
+        <span class="py-status" id="status-lists">Python ready</span>
+      </div>
+    </div>
+    
+    <div class="task-box" style="border-color:#2dd4bf">
+      <span class="task-icon">✏️</span>
+      <div class="task-text"><b>Your Task:</b> Create a list of 5 numbers. Find their average, then print only numbers greater than the average.</div>
+    </div>
+    
+  </div>
+  
+</section>
+
+<section class="lesson" id="functions" style="--ac:#f87171">
+  <div class="lesson-head">
+    <span class="licon">⚙️</span>
+    <div>
+      <div class="lnum">LESSON 09</div>
+      <div class="ltitle">Functions</div>
+      <div class="lsub">Write once, use anywhere</div>
+    </div>
+  </div>
+  <div class="lesson-cols">
+    <div class="anim-panel">
+      <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <g style="transform-origin:100px 88px;animation:spin 6s linear infinite">
+    <path d="M100 40 L110 55 L128 52 L133 70 L148 78 L140 95 L150 110 L136 120 L138 138 L120 140 L113 156 L100 150 L87 156 L80 140 L62 138 L64 120 L50 110 L60 95 L52 78 L67 70 L72 52 L90 55 Z" fill="#f87171" opacity="0.9"/>
+  </g>
+  <circle cx="100" cy="88" r="28" fill="#0d1627" stroke="#f87171" stroke-width="3"/>
+  <text x="100" y="85" text-anchor="middle" fill="#f87171" font-size="10" font-weight="700" font-family="Fira Code,monospace">def fn()</text>
+  <text x="100" y="100" text-anchor="middle" fill="#f87171" font-size="9" font-family="Fira Code,monospace">return</text>
+  <text x="100" y="175" text-anchor="middle" fill="#94a3b8" font-size="10" font-family="Space Grotesk">reusable code</text>
+</svg>
+    </div>
+    <div class="theory">
+      
+      <div class="theory-item">
+        <span class="tdot"></span>
+        <div>
+          <div class="tkey">What is a Function?</div>
+          <div class="tval">A function is a <b>named block of reusable code</b>. Instead of writing the same code 10 times, put it in a function and call it 10 times!</div>
+        </div>
+      </div>
+      
+      <div class="theory-item">
+        <span class="tdot"></span>
+        <div>
+          <div class="tkey">Defining a Function</div>
+          <div class="tval">Use <code>def</code> keyword, then the name, then parentheses and colon. The code inside must be indented.</div>
+        </div>
+      </div>
+      
+      <div class="theory-item">
+        <span class="tdot"></span>
+        <div>
+          <div class="tkey">Parameters &amp; Arguments</div>
+          <div class="tval">Functions can accept <b>inputs</b> called parameters. When you call the function, you pass <b>arguments</b> for those parameters.</div>
+        </div>
+      </div>
+      
+      <div class="theory-item">
+        <span class="tdot"></span>
+        <div>
+          <div class="tkey">The return Statement</div>
+          <div class="tval"><code>return</code> sends a result back to the caller. Without return, the function returns <code>None</code>.</div>
+        </div>
+      </div>
+      
+      <div class="theory-item">
+        <span class="tdot"></span>
+        <div>
+          <div class="tkey">Default Parameters</div>
+          <div class="tval">You can give parameters a default value: <code>def greet(name="Student")</code> — works even if no argument is passed.</div>
+        </div>
+      </div>
+      
+      <div class="theory-item">
+        <span class="tdot"></span>
+        <div>
+          <div class="tkey">Why Functions?</div>
+          <div class="tval">They make code <b>reusable</b>, <b>organised</b>, and easier to <b>test and fix</b>. Large programs are built from many small functions.</div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+  
+  <div class="code-sec">
+    <div class="sec-label">📖 Example Code</div>
+    <div class="code-wrap">
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      <pre class="code-block"><span class="cm"># Functions <span class="kw">in </span>Python</span>
+<span class="kw">def </span>greet(name, age=<span class="nm">15</span>):
+    <span class="kw">return </span><span class="st">f&quot;Hello {name}! You are {age} years old.&quot;</span>
+
+<span class="kw">def </span>calculate_area(length, width):
+    area = length * width
+    <span class="kw">return </span>area
+
+<span class="kw">def </span>is_even(number):
+    <span class="kw">if </span>number % <span class="nm">2</span> == <span class="nm">0</span>:
+        <span class="kw">return </span><span class="kw">True</span>
+    <span class="kw">else:</span>
+        <span class="kw">return </span><span class="kw">False</span>
+
+<span class="cm"># Calling functions</span>
+<span class="fn">print</span>(greet(<span class="st">&quot;Ravi&quot;</span>))
+<span class="fn">print</span>(greet(<span class="st">&quot;Meera&quot;</span>, <span class="nm">16</span>))
+
+area = calculate_area(<span class="nm">10</span>, <span class="nm">5</span>)
+<span class="fn">print</span>(<span class="st">f&quot;Area of rectangle: {area}&quot;</span>)
+
+<span class="kw">f<span class="kw">or </span></span>n <span class="kw">in </span>[<span class="nm">4</span>, <span class="nm">7</span>, <span class="nm">12</span>, <span class="nm">9</span>]:
+    result = <span class="st">&quot;even&quot;</span> <span class="kw">if </span>is_even(n) <span class="kw">else </span><span class="st">&quot;odd&quot;</span>
+    <span class="fn">print</span>(<span class="st">f&quot;{n} is {result}&quot;</span>)</pre>
+    </div>
+    
+    <div class="sec-label" style="margin-top:12px;">📤 Expected Output</div>
+    <div class="out-block">Hello Ravi! You are 15 years old.
+Hello Meera! You are 16 years old.
+Area of rectangle: 50
+4 is even
+7 is odd
+12 is even
+9 is odd</div>
+    
+  </div>
+  <!-- LIVE CODE RUNNER -->
+  <div class="code-sec" style="padding-top:0;">
+    <div class="sec-label">🚀 Try It Yourself — Live Code Runner</div>
+    <div class="runner">
+      <div class="runner-tabs">
+        <button class="rtab on" onclick="switchTab(this,'edit','functions')">✏️ Editor</button>
+        <button class="rtab" onclick="switchTab(this,'out','functions')">📤 Output</button>
+      </div>
+      <div id="edit-functions" class="runner-editor">
+        <textarea id="code-functions" spellcheck="false" autocorrect="off" autocapitalize="off"># Functions in Python
+def greet(name, age=15):
+    return f&#34;Hello {name}! You are {age} years old.&#34;
+
+def calculate_area(length, width):
+    area = length * width
+    return area
+
+def is_even(number):
+    if number % 2 == 0:
+        return True
+    else:
+        return False
+
+# Calling functions
+print(greet(&#34;Ravi&#34;))
+print(greet(&#34;Meera&#34;, 16))
+
+area = calculate_area(10, 5)
+print(f&#34;Area of rectangle: {area}&#34;)
+
+for n in [4, 7, 12, 9]:
+    result = &#34;even&#34; if is_even(n) else &#34;odd&#34;
+    print(f&#34;{n} is {result}&#34;)</textarea>
+      </div>
+      <div id="out-functions" style="display:none">
+        <div class="output-area"><div class="out-text info" id="result-functions">Run your code to see output here ▶</div></div>
+      </div>
+      <div class="runner-footer">
+        <button class="run-btn" onclick="runCode('functions')">▶ Run Code</button>
+        <button class="clear-btn" onclick="clearCode('functions','# Functions in Python
+def greet(name, age=15):
+    return f&#34;Hello {name}! You are {age} years old.&#34;
+
+def calculate_area(length, width):
+    area = length * width
+    return area
+
+def is_even(number):
+    if number % 2 == 0:
+        return True
+    else:
+        return False
+
+# Calling functions
+print(greet(&#34;Ravi&#34;))
+print(greet(&#34;Meera&#34;, 16))
+
+area = calculate_area(10, 5)
+print(f&#34;Area of rectangle: {area}&#34;)
+
+for n in [4, 7, 12, 9]:
+    result = &#34;even&#34; if is_even(n) else &#34;odd&#34;
+    print(f&#34;{n} is {result}&#34;)')">↺ Reset</button>
+        <span class="py-status" id="status-functions">Python ready</span>
+      </div>
+    </div>
+    
+    <div class="task-box" style="border-color:#f87171">
+      <span class="task-icon">✏️</span>
+      <div class="task-text"><b>Your Task:</b> Write a function called factorial(n) that calculates n! (e.g. 5! = 5×4×3×2×1 = 120). Test with n=5.</div>
+    </div>
+    
+  </div>
+  
+</section>
+
+
+<!-- QUIZ -->
+<section class="quiz-wrap" id="quiz">
+  <div class="quiz-title">🧠 Python Quiz</div>
+  <div class="quiz-sub">Test everything you've learned — 8 questions, instant feedback with explanations!</div>
+
+  
+  <div class="q-box on" id="qb-0">
+    <div class="q-top"><span class="q-counter">Question 1 of 8</span><span class="q-pts">+1 point each</span></div>
+    <div class="q-prog"><div class="q-prog-bar" style="width:0%"></div></div>
+    <div class="q-text">Which function displays text on the screen in Python?</div>
+    <div class="q-opts">
+      
+      <button class="opt" onclick="answer(0,0,2,this,'print() is Python&#39;s built-in function to display output on the screen.')">input()</button>
+      
+      <button class="opt" onclick="answer(0,1,2,this,'print() is Python&#39;s built-in function to display output on the screen.')">scan()</button>
+      
+      <button class="opt" onclick="answer(0,2,2,this,'print() is Python&#39;s built-in function to display output on the screen.')">print()</button>
+      
+      <button class="opt" onclick="answer(0,3,2,this,'print() is Python&#39;s built-in function to display output on the screen.')">show()</button>
+      
+    </div>
+    <div class="q-exp" id="exp-0"></div>
+    <div class="q-footer">
+      <div class="q-score-text">Score: <b id="sc">0</b></div>
+      <button class="next-btn" onclick="nextQ(0)">Next →</button>
+      
+    </div>
+  </div>
+  
+  <div class="q-box " id="qb-1">
+    <div class="q-top"><span class="q-counter">Question 2 of 8</span><span class="q-pts">+1 point each</span></div>
+    <div class="q-prog"><div class="q-prog-bar" style="width:12%"></div></div>
+    <div class="q-text">What data type is: marks = 92.5?</div>
+    <div class="q-opts">
+      
+      <button class="opt" onclick="answer(1,0,3,this,'92.5 has a decimal point, so it&#39;s a float (floating point number).')">int</button>
+      
+      <button class="opt" onclick="answer(1,1,3,this,'92.5 has a decimal point, so it&#39;s a float (floating point number).')">str</button>
+      
+      <button class="opt" onclick="answer(1,2,3,this,'92.5 has a decimal point, so it&#39;s a float (floating point number).')">bool</button>
+      
+      <button class="opt" onclick="answer(1,3,3,this,'92.5 has a decimal point, so it&#39;s a float (floating point number).')">float</button>
+      
+    </div>
+    <div class="q-exp" id="exp-1"></div>
+    <div class="q-footer">
+      <div class="q-score-text">Score: <b id="sc">0</b></div>
+      <button class="next-btn" onclick="nextQ(1)">Next →</button>
+      
+    </div>
+  </div>
+  
+  <div class="q-box " id="qb-2">
+    <div class="q-top"><span class="q-counter">Question 3 of 8</span><span class="q-pts">+1 point each</span></div>
+    <div class="q-prog"><div class="q-prog-bar" style="width:25%"></div></div>
+    <div class="q-text">What is the output of: print(2 + 3 * 4)?</div>
+    <div class="q-opts">
+      
+      <button class="opt" onclick="answer(2,0,1,this,'BODMAS: Multiplication first → 3*4=12, then 2+12=14.')">20</button>
+      
+      <button class="opt" onclick="answer(2,1,1,this,'BODMAS: Multiplication first → 3*4=12, then 2+12=14.')">14</button>
+      
+      <button class="opt" onclick="answer(2,2,1,this,'BODMAS: Multiplication first → 3*4=12, then 2+12=14.')">24</button>
+      
+      <button class="opt" onclick="answer(2,3,1,this,'BODMAS: Multiplication first → 3*4=12, then 2+12=14.')">12</button>
+      
+    </div>
+    <div class="q-exp" id="exp-2"></div>
+    <div class="q-footer">
+      <div class="q-score-text">Score: <b id="sc">0</b></div>
+      <button class="next-btn" onclick="nextQ(2)">Next →</button>
+      
+    </div>
+  </div>
+  
+  <div class="q-box " id="qb-3">
+    <div class="q-top"><span class="q-counter">Question 4 of 8</span><span class="q-pts">+1 point each</span></div>
+    <div class="q-prog"><div class="q-prog-bar" style="width:37%"></div></div>
+    <div class="q-text">Which keyword is used to define a function?</div>
+    <div class="q-opts">
+      
+      <button class="opt" onclick="answer(3,0,2,this,'The &#39;def&#39; keyword is used to define functions in Python.')">function</button>
+      
+      <button class="opt" onclick="answer(3,1,2,this,'The &#39;def&#39; keyword is used to define functions in Python.')">define</button>
+      
+      <button class="opt" onclick="answer(3,2,2,this,'The &#39;def&#39; keyword is used to define functions in Python.')">def</button>
+      
+      <button class="opt" onclick="answer(3,3,2,this,'The &#39;def&#39; keyword is used to define functions in Python.')">func</button>
+      
+    </div>
+    <div class="q-exp" id="exp-3"></div>
+    <div class="q-footer">
+      <div class="q-score-text">Score: <b id="sc">0</b></div>
+      <button class="next-btn" onclick="nextQ(3)">Next →</button>
+      
+    </div>
+  </div>
+  
+  <div class="q-box " id="qb-4">
+    <div class="q-top"><span class="q-counter">Question 5 of 8</span><span class="q-pts">+1 point each</span></div>
+    <div class="q-prog"><div class="q-prog-bar" style="width:50%"></div></div>
+    <div class="q-text">What does len([1, 2, 3, 4]) return?</div>
+    <div class="q-opts">
+      
+      <button class="opt" onclick="answer(4,0,1,this,'len() counts the number of items in a list. The list has 4 items.')">3</button>
+      
+      <button class="opt" onclick="answer(4,1,1,this,'len() counts the number of items in a list. The list has 4 items.')">4</button>
+      
+      <button class="opt" onclick="answer(4,2,1,this,'len() counts the number of items in a list. The list has 4 items.')">5</button>
+      
+      <button class="opt" onclick="answer(4,3,1,this,'len() counts the number of items in a list. The list has 4 items.')">0</button>
+      
+    </div>
+    <div class="q-exp" id="exp-4"></div>
+    <div class="q-footer">
+      <div class="q-score-text">Score: <b id="sc">0</b></div>
+      <button class="next-btn" onclick="nextQ(4)">Next →</button>
+      
+    </div>
+  </div>
+  
+  <div class="q-box " id="qb-5">
+    <div class="q-top"><span class="q-counter">Question 6 of 8</span><span class="q-pts">+1 point each</span></div>
+    <div class="q-prog"><div class="q-prog-bar" style="width:62%"></div></div>
+    <div class="q-text">What does 10 % 3 give?</div>
+    <div class="q-opts">
+      
+      <button class="opt" onclick="answer(5,0,1,this,'% is modulus — it gives the remainder. 10 ÷ 3 = 3 remainder 1.')">3</button>
+      
+      <button class="opt" onclick="answer(5,1,1,this,'% is modulus — it gives the remainder. 10 ÷ 3 = 3 remainder 1.')">1</button>
+      
+      <button class="opt" onclick="answer(5,2,1,this,'% is modulus — it gives the remainder. 10 ÷ 3 = 3 remainder 1.')">0</button>
+      
+      <button class="opt" onclick="answer(5,3,1,this,'% is modulus — it gives the remainder. 10 ÷ 3 = 3 remainder 1.')">2</button>
+      
+    </div>
+    <div class="q-exp" id="exp-5"></div>
+    <div class="q-footer">
+      <div class="q-score-text">Score: <b id="sc">0</b></div>
+      <button class="next-btn" onclick="nextQ(5)">Next →</button>
+      
+    </div>
+  </div>
+  
+  <div class="q-box " id="qb-6">
+    <div class="q-top"><span class="q-counter">Question 7 of 8</span><span class="q-pts">+1 point each</span></div>
+    <div class="q-prog"><div class="q-prog-bar" style="width:75%"></div></div>
+    <div class="q-text">Which loop runs as long as a condition is True?</div>
+    <div class="q-opts">
+      
+      <button class="opt" onclick="answer(6,0,2,this,'The while loop keeps running as long as its condition remains True.')">for loop</button>
+      
+      <button class="opt" onclick="answer(6,1,2,this,'The while loop keeps running as long as its condition remains True.')">if loop</button>
+      
+      <button class="opt" onclick="answer(6,2,2,this,'The while loop keeps running as long as its condition remains True.')">while loop</button>
+      
+      <button class="opt" onclick="answer(6,3,2,this,'The while loop keeps running as long as its condition remains True.')">do loop</button>
+      
+    </div>
+    <div class="q-exp" id="exp-6"></div>
+    <div class="q-footer">
+      <div class="q-score-text">Score: <b id="sc">0</b></div>
+      <button class="next-btn" onclick="nextQ(6)">Next →</button>
+      
+    </div>
+  </div>
+  
+  <div class="q-box " id="qb-7">
+    <div class="q-top"><span class="q-counter">Question 8 of 8</span><span class="q-pts">+1 point each</span></div>
+    <div class="q-prog"><div class="q-prog-bar" style="width:87%"></div></div>
+    <div class="q-text">How do you get the last item in a list called &#39;items&#39;?</div>
+    <div class="q-opts">
+      
+      <button class="opt" onclick="answer(7,0,1,this,'Negative indexing: items[-1] always gives the last element of a list.')">items[0]</button>
+      
+      <button class="opt" onclick="answer(7,1,1,this,'Negative indexing: items[-1] always gives the last element of a list.')">items[-1]</button>
+      
+      <button class="opt" onclick="answer(7,2,1,this,'Negative indexing: items[-1] always gives the last element of a list.')">items[last]</button>
+      
+      <button class="opt" onclick="answer(7,3,1,this,'Negative indexing: items[-1] always gives the last element of a list.')">items.end()</button>
+      
+    </div>
+    <div class="q-exp" id="exp-7"></div>
+    <div class="q-footer">
+      <div class="q-score-text">Score: <b id="sc">0</b></div>
+      <button class="next-btn" onclick="showResult()">See Result 🎉</button>
+    </div>
+  </div>
+  
+
+  <div class="result-box" id="result-final">
+    <div class="res-emoji" id="r-emoji">🏆</div>
+    <div class="res-title">Quiz Complete!</div>
+    <div class="res-score" id="r-score">0 / 8</div>
+    <div class="res-msg" id="r-msg"></div>
+    <button class="next-btn" onclick="restartQuiz()">Try Again 🔄</button>
+  </div>
+</section>
+</main>
+
+<footer>
+  🐍 Learn Python — Class 10 &nbsp;·&nbsp; Built with Python + Flask &nbsp;·&nbsp; Keep coding, keep growing! 🚀<br>
+  <span style="font-size:.72rem">Tip: Click ▶ Run Code to execute Python directly in your browser using Pyodide!</span>
+</footer>
+
+<script>
+// ── STARS ──
+const starDiv = document.getElementById('stars');
+for(let i=0;i<90;i++){
+  const d=document.createElement('div');d.className='s';
+  const sz=Math.random()*2.2+.4;
+  d.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;animation:tw ${2+Math.random()*4}s ${Math.random()*4}s ease-in-out infinite alternate;opacity:.1`;
+  starDiv.appendChild(d);
+}
+
+// ── SCROLL PROGRESS + REVEAL + NAV ──
+const lessons = document.querySelectorAll('.lesson');
+const navLinks = document.querySelectorAll('nav a');
+const pb = document.getElementById('progress-bar');
+
+const obs = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.classList.add('show');
+      navLinks.forEach(a=>{
+        a.classList.toggle('active', a.dataset.id===e.target.id);
+      });
+    }
+  });
+},{threshold:.12});
+lessons.forEach(l=>obs.observe(l));
+
+window.addEventListener('scroll',()=>{
+  const doc=document.documentElement;
+  pb.style.width=((doc.scrollTop/(doc.scrollHeight-doc.clientHeight))*100)+'%';
+});
+
+// ── COPY ──
+function copyCode(btn){
+  const pre=btn.nextElementSibling;
+  navigator.clipboard.writeText(pre.innerText).then(()=>{
+    btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy',1600);
+  });
+}
+
+// ── RUNNER TABS ──
+function switchTab(btn,tab,id){
+  btn.parentElement.querySelectorAll('.rtab').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('edit-'+id).style.display=tab==='edit'?'':'none';
+  document.getElementById('out-'+id).style.display=tab==='out'?'':'none';
+}
+
+// ── PYODIDE ──
+let pyodide=null;
+let pyReady=false;
+let pyLoading=false;
+
+async function loadPy(){
+  if(pyReady||pyLoading) return;
+  pyLoading=true;
+  document.querySelectorAll('.py-status').forEach(e=>e.textContent='Loading Python...');
+  try{
+    pyodide=await loadPyodide({indexURL:"https://cdn.jsdelivr.net/pyodide/v0.24.1/full/"});
+    pyReady=true;
+    document.querySelectorAll('.py-status').forEach(e=>e.textContent='Python ready ✅');
+  }catch(err){
+    document.querySelectorAll('.py-status').forEach(e=>e.textContent='Python offline ⚠');
+    pyLoading=false;
+  }
+}
+
+// Pre-load on first scroll
+let loaded=false;
+window.addEventListener('scroll',()=>{if(!loaded&&window.scrollY>200){loaded=true;loadPy();}},{once:true});
+window.addEventListener('load',()=>setTimeout(loadPy,1000));
+
+async function runCode(id){
+  const ta=document.getElementById('code-'+id);
+  const res=document.getElementById('result-'+id);
+  const status=document.getElementById('status-'+id);
+
+  // Switch to output tab
+  const allTabs=document.querySelectorAll(`#edit-${id},#out-${id}`);
+  document.getElementById('edit-'+id).style.display='none';
+  document.getElementById('out-'+id).style.display='';
+  document.querySelectorAll(`[onclick="switchTab(this,'edit','${id}')"]`).forEach(b=>b.classList.remove('on'));
+  document.querySelectorAll(`[onclick="switchTab(this,'out','${id}')"]`).forEach(b=>b.classList.add('on'));
+
+  if(!pyReady){
+    res.className='out-text loading';
+    res.textContent='Loading Python runtime... please wait a moment then try again.';
+    await loadPy();
+    if(!pyReady){res.className='out-text error';res.textContent='Failed to load Python. Check your internet connection.';return;}
+  }
+
+  res.className='out-text loading';
+  res.textContent='Running...';
+  status.textContent='Running...';
+
+  const code=ta.value;
+  try{
+    let output=[];
+    pyodide.globals.set('_output',[]);
+
+    // Redirect stdout
+    const captureCode=`
+import sys
+from io import StringIO
+_buf = StringIO()
+sys.stdout = _buf
+try:
+${code.split('\n').map(l=>'    '+l).join('\n')}
+except Exception as _e:
+    print(f"Error: {_e}")
+finally:
+    sys.stdout = sys.__stdout__
+    _result = _buf.getvalue()
+`;
+    await pyodide.runPythonAsync(captureCode);
+    const result=pyodide.globals.get('_result');
+    res.className='out-text success';
+    res.textContent=result||'(No output — did you forget print()?)';
+    status.textContent='Done ✅';
+  }catch(err){
+    res.className='out-text error';
+    res.textContent='Error: '+err.message;
+    status.textContent='Error ❌';
+  }
+}
+
+function clearCode(id, original){
+  document.getElementById('code-'+id).value=original;
+  document.getElementById('result-'+id).className='out-text info';
+  document.getElementById('result-'+id).textContent='Run your code to see output here ▶';
+  document.getElementById('status-'+id).textContent='Python ready';
+  document.getElementById('edit-'+id).style.display='';
+  document.getElementById('out-'+id).style.display='none';
+  document.querySelectorAll(`[onclick="switchTab(this,'edit','${id}')"]`).forEach(b=>b.classList.add('on'));
+  document.querySelectorAll(`[onclick="switchTab(this,'out','${id}')"]`).forEach(b=>b.classList.remove('on'));
+}
+
+// Tab key in textarea
+document.querySelectorAll('textarea').forEach(ta=>{
+  ta.addEventListener('keydown',e=>{
+    if(e.key==='Tab'){
+      e.preventDefault();
+      const s=ta.selectionStart,en=ta.selectionEnd;
+      ta.value=ta.value.substring(0,s)+'    '+ta.value.substring(en);
+      ta.selectionStart=ta.selectionEnd=s+4;
+    }
+  });
+});
+
+// ── QUIZ ──
+let score=0,answered=Array(8).fill(false);
+
+function answer(qi,chosen,correct,btn,exp){
+  if(answered[qi]) return;
+  answered[qi]=true;
+  const opts=btn.parentElement.querySelectorAll('.opt');
+  opts.forEach(o=>o.disabled=true);
+  opts[correct].classList.add('correct');
+  const expEl=document.getElementById('exp-'+qi);
+  expEl.className='q-exp show';
+  if(chosen===correct){
+    score++;
+    document.querySelectorAll('#sc').forEach(e=>e.textContent=score);
+    expEl.textContent='✅ Correct! '+exp;
+  }else{
+    btn.classList.add('wrong');
+    expEl.textContent='❌ Wrong. '+exp;
+  }
+}
+
+function nextQ(i){
+  document.getElementById('qb-'+i).classList.remove('on');
+  document.getElementById('qb-'+(i+1)).classList.add('on');
+}
+
+function showResult(){
+  document.querySelectorAll('.q-box').forEach(b=>b.classList.remove('on'));
+  const fin=document.getElementById('result-final');
+  fin.style.display='block';
+  const total=8;
+  const pct=score/total;
+  document.getElementById('r-score').textContent=score+' / '+total;
+  document.getElementById('r-emoji').textContent=pct>=.875?'🏆':pct>=.625?'🌟':pct>=.375?'👍':'📚';
+  document.getElementById('r-msg').textContent=pct>=.875?'Outstanding! You have mastered Python basics!':pct>=.625?'Great work! Keep practicing and you\'ll be a Python expert.':pct>=.375?'Good effort! Review the lessons and try again.':'Keep learning! Go through the lessons carefully and retry.';
+}
+
+function restartQuiz(){
+  score=0;answered=Array(8).fill(false);
+  document.querySelectorAll('#sc').forEach(e=>e.textContent=0);
+  document.querySelectorAll('.q-box').forEach(b=>b.classList.remove('on'));
+  document.querySelectorAll('.opt').forEach(o=>{o.classList.remove('correct','wrong');o.disabled=false;});
+  document.querySelectorAll('.q-exp').forEach(e=>{e.className='q-exp';e.textContent='';});
+  document.getElementById('result-final').style.display='none';
+  document.getElementById('qb-0').classList.add('on');
+}
+</script>
+</body>
+</html>
